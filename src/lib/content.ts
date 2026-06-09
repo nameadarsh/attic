@@ -4,7 +4,7 @@ import matter from 'gray-matter';
 import { VisualMetadata, PoemMetadata, JournalMetadata } from '@/types';
 
 const CONTENT_PATH = path.join(process.cwd(), 'content');
-const MEDIA_PATH = path.join(process.cwd(), 'media');
+const MEDIA_PATH = path.join(process.cwd(), 'public', 'media');
 const WORKS_CONTENT_PATH = path.join(CONTENT_PATH, 'works');
 
 /**

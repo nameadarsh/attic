@@ -37,7 +37,7 @@ npm start
 The project is entirely content-driven from repository files. You can use either `.md` or `.txt` formats.
 
 ### 1. Visuals (Images & Videos)
-- **Step 1:** Drop your media file (`.jpg`, `.png`, `.webp`, `.mp4`) into the `media/` directory.
+- **Step 1:** Drop your media file (`.jpg`, `.png`, `.webp`, `.mp4`) into the `public/media/` directory.
 - **Step 2:** Start the dev server. A metadata file with the same name will be automatically created in `content/works/`.
 - **Step 3:** Edit the file in `content/works/` to add a description and set `Published: 1`.
 
@@ -66,7 +66,7 @@ Spacing and line breaks are preserved.
 
 ### 3. Hero Kaun (Journal)
 - **Step 1:** Create a new file in `content/journal/`.
-- **Step 2:** If you have media for the entry, put it in `journal_media/`.
+- **Step 2:** If you have media for the entry, put it in `public/journal_media/`.
 - **Step 3:** Use the following format:
 
 **Format:**
@@ -78,24 +78,19 @@ Highlight: 0
 Media: hills.jpg, sunset.mp4
 
 Your journal entry text goes here.
-Media filenames should match the files in journal_media/.
+Media filenames should match the files in public/journal_media/.
 ```
 
 ## Project Structure
 
 ```text
+├── public/               # Static assets
+│   ├── media/            # Images and videos for Visuals
+│   └── journal_media/    # Images and videos for Journal entries
 ├── content/              # All text-based content
 │   ├── works/            # Visuals metadata
 │   ├── poems/            # Poem entries
 │   └── journal/          # Journal (Hero Kaun) entries
-├── media/                # Images and videos for Visuals
-├── journal_media/        # Images and videos for Journal entries
-├── src/                  # Next.js application source
-│   ├── app/              # Routes and pages
-│   ├── components/       # UI components (Modals, Cards, Nav)
-│   ├── lib/              # Content engine and utilities
-│   └── types/            # TypeScript definitions
-├── public/               # Static assets
 ├── ATTIC_SPECIFICATION.md # Project source of truth
 └── DEVELOPMENT_LOG.md    # History of implementation
 ```
