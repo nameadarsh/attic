@@ -80,7 +80,14 @@ function parseCustomFormat(fileContent: string) {
  */
 export function syncMediaMetadata() {
   if (!fs.existsSync(MEDIA_PATH)) return;
-  if (!fs.existsSync(WORKS_CONTENT_PATH)) fs.mkdirSync(WORKS_CONTENT_PATH, { recursive: true });
+  if (!fs.existsSync(WORKS_CONTENT_PATH)) {
+    try {
+      fs.mkdirSync(WORKS_CONTENT_PATH, { recursive: true });
+    } catch (e) {
+      console.error('Failed to create works directory', e);
+      return;
+    }
+  }
 
   const mediaFiles = fs.readdirSync(MEDIA_PATH).filter(file => 
     /\.(jpg|jpeg|png|webp|mp4)$/i.test(file)
@@ -93,7 +100,11 @@ export function syncMediaMetadata() {
 
     if (!fs.existsSync(metaFilePath)) {
       const defaultMetadata = `Title: ${baseName}\nPublished: 0\nHighlight: 0\n\n`;
-      fs.writeFileSync(metaFilePath, defaultMetadata);
+      try {
+        fs.writeFileSync(metaFilePath, defaultMetadata);
+      } catch (e) {
+        console.error(`Failed to write metadata for ${mediaFile}`, e);
+      }
     }
   });
 }
@@ -109,6 +120,10 @@ export function getAllVisuals(): VisualMetadata[] {
   if (visualsCache && process.env.NODE_ENV === 'production') return visualsCache;
   
   syncMediaMetadata();
+  
+  if (!fs.existsSync(WORKS_CONTENT_PATH)) return [];
+  if (!fs.existsSync(MEDIA_PATH)) return [];
+
   const files = fs.readdirSync(WORKS_CONTENT_PATH).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
   
   const visuals = files.map(file => {
@@ -164,7 +179,13 @@ export function getAllPoems(): PoemMetadata[] {
   const poemDir = path.join(CONTENT_PATH, 'poems');
   if (!fs.existsSync(poemDir)) return [];
   
-  const files = fs.readdirSync(poemDir).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
+  let files: string[] = [];
+  try {
+    files = fs.readdirSync(poemDir).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
+  } catch (e) {
+    console.error('Failed to read poems directory', e);
+    return [];
+  }
   
   const poems = files.map(file => {
     const contentData = getFileContent('poems', file);
@@ -195,7 +216,13 @@ export function getAllJournalEntries(): JournalMetadata[] {
   const journalDir = path.join(CONTENT_PATH, 'journal');
   if (!fs.existsSync(journalDir)) return [];
   
-  const files = fs.readdirSync(journalDir).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
+  let files: string[] = [];
+  try {
+    files = fs.readdirSync(journalDir).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
+  } catch (e) {
+    console.error('Failed to read journal directory', e);
+    return [];
+  }
   
   const entries = files.map(file => {
     const contentData = getFileContent('journal', file);
