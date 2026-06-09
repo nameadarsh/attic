@@ -53,44 +53,44 @@ export default function PoemReader({ poem, onClose }: PoemReaderProps) {
         ref={modalRef}
       >
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative w-full max-w-2xl max-h-[85vh] bg-[#0c0c0c] border border-white/5 p-12 md:p-20 overflow-y-auto rounded-sm shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Close Button */}
-          <button 
-            onClick={onClose}
-            className="absolute top-8 right-8 text-white/20 hover:text-white transition-colors p-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-full max-w-2xl max-h-[85vh] bg-black/80 backdrop-blur-2xl border border-white/10 p-12 md:p-20 overflow-y-auto rounded-sm shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
           >
-            <X size={20} />
-          </button>
+            {/* Close Button */}
+            <button 
+              onClick={onClose}
+              className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors p-2 bg-white/5 rounded-full"
+            >
+              <X size={20} />
+            </button>
 
-          {/* Poem Content */}
-          <article className="font-serif">
-            <header className="mb-16">
-              <div className="flex items-center gap-6 mb-4">
-                <h2 className="text-4xl md:text-5xl font-light text-white italic leading-tight">
-                  {poem.title}
-                </h2>
-                {poem.highlight && <Star size={20} className="text-accent-warm fill-current" />}
+            {/* Poem Content */}
+            <article className="font-serif">
+              <header className="mb-16">
+                <div className="flex items-center gap-6 mb-4">
+                  <h2 className="text-4xl md:text-5xl font-light text-white italic leading-tight">
+                    {poem.title}
+                  </h2>
+                  {poem.highlight && <Star size={20} className="text-accent-warm fill-current" />}
+                </div>
+                <div className="h-px w-20 bg-accent-warm/40 mt-10" />
+              </header>
+              
+              <div className="text-xl md:text-2xl text-white/90 leading-[1.8] whitespace-pre-wrap space-y-10">
+                {poem.content}
               </div>
-              <div className="h-px w-20 bg-accent-warm/40 mt-10" />
-            </header>
-            
-            <div className="text-xl md:text-2xl text-white/80 leading-[1.8] whitespace-pre-wrap space-y-10">
-              {poem.content}
-            </div>
 
-            <footer className="mt-20 pt-12 border-t border-white/5">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-white/20 italic text-center">
-                Finis
-              </p>
-            </footer>
-          </article>
-        </motion.div>
+              <footer className="mt-20 pt-12 border-t border-white/5">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-text-dim italic text-center">
+                  Finis
+                </p>
+              </footer>
+            </article>
+          </motion.div>
       </motion.div>
     </AnimatePresence>
   );

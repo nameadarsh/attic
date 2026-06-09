@@ -17,8 +17,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased min-h-screen selection:bg-accent-warm/30 bg-[#0a0a0a]">
-        {children}
+      <body className="antialiased min-h-screen selection:bg-accent-warm/30">
+        <div className="grain-overlay" />
+        <div className="texture-overlay" />
+        <div className="ambient-light" />
+        <main className="relative z-10">
+          {children}
+        </main>
       </body>
     </html>
   );

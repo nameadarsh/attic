@@ -7,14 +7,14 @@ export default function VisualsPage() {
   const visuals = getAllVisuals();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow px-6 md:px-12 max-w-[1800px] mx-auto w-full pt-32">
         <header className="mb-32 text-center md:text-left">
           <h1 className="text-4xl md:text-6xl font-light tracking-tight text-white mb-6">
             Visuals
           </h1>
-          <p className="text-base font-light text-white/50 max-w-lg leading-relaxed">
+          <p className="text-base font-light text-text-muted leading-relaxed">
             A collection of moments captured in light and motion. Chronological, quiet, and kept.
           </p>
         </header>

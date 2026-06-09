@@ -36,15 +36,15 @@ export default function PoemsList({ poems }: PoemsListProps) {
             onClick={() => setSelectedPoem(poem)}
             className="group cursor-pointer flex flex-col space-y-6"
           >
-            <h2 className="text-2xl font-serif font-light text-white/80 group-hover:text-white transition-colors duration-700 italic">
+            <h2 className="text-2xl font-serif font-light text-white group-hover:text-accent-warm transition-colors duration-700 italic">
               {poem.title}
             </h2>
             
             <div className="relative">
-              <p className="text-base font-serif font-light text-white/20 group-hover:text-white/40 transition-colors duration-700 leading-relaxed line-clamp-8 whitespace-pre-wrap italic">
+              <p className="text-base font-serif font-light text-text-muted group-hover:text-white transition-colors duration-700 leading-relaxed line-clamp-8 whitespace-pre-wrap italic">
                 {poem.content}
               </p>
-              <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent" />
             </div>
           </motion.div>
         ))}

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn, ZoomOut, Info, Share2, Star } from 'lucide-react';
 import { VisualMetadata } from '@/types';
+import { cn } from '@/lib/utils';
 
 interface VisualViewerProps {
   visual: VisualMetadata | null;
@@ -71,21 +72,24 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
         <div className="absolute top-6 right-6 flex items-center gap-2 md:gap-4 z-[110]">
           <button 
             onClick={() => setZoom(prev => Math.min(prev + 0.2, 3))} 
-            className="p-2 text-white/40 hover:text-white transition-colors"
+            className="p-2 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full"
             aria-label="Zoom in"
           >
             <ZoomIn size={20} />
           </button>
           <button 
             onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.5))} 
-            className="p-2 text-white/40 hover:text-white transition-colors"
+            className="p-2 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full"
             aria-label="Zoom out"
           >
             <ZoomOut size={20} />
           </button>
           <button 
             onClick={() => setShowInfo(!showInfo)} 
-            className={`p-2 transition-colors ${showInfo ? 'text-white' : 'text-white/40 hover:text-white'}`}
+            className={cn(
+              "p-2 transition-colors bg-black/20 backdrop-blur-md rounded-full",
+              showInfo ? 'text-accent-warm' : 'text-white/60 hover:text-white'
+            )}
             aria-label="Show info"
             aria-pressed={showInfo}
           >
@@ -93,14 +97,14 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
           </button>
           <button 
             onClick={handleShare} 
-            className="p-2 text-white/40 hover:text-white transition-colors"
+            className="p-2 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full"
             aria-label="Share"
           >
             <Share2 size={20} />
           </button>
           <button 
             onClick={onClose} 
-            className="p-2 text-white/40 hover:text-white transition-colors ml-4"
+            className="p-2 text-white/60 hover:text-white transition-colors ml-4 bg-black/20 backdrop-blur-md rounded-full"
             aria-label="Close"
           >
             <X size={24} />
@@ -115,10 +119,10 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
             </div>
           ) : (
             <motion.div 
-              className="relative max-w-full max-h-full aspect-auto shadow-2xl bg-neutral-900"
+              className="relative max-w-full max-h-full shadow-2xl bg-neutral-900/50"
               layoutId={`visual-${visual.slug}`}
               style={{ scale: zoom }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
               {visual.type === 'video' ? (
                 <video 
@@ -127,7 +131,12 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
                   autoPlay 
                   loop 
                   onError={() => setHasError(true)}
-                  className="max-w-full max-h-[85vh] block"
+                  className={cn(
+                    "max-w-full max-h-[85vh] block",
+                    visual.rotation === 90 && "rotate-90",
+                    visual.rotation === 180 && "rotate-180",
+                    visual.rotation === 270 && "-rotate-90"
+                  )}
                 />
               ) : (
                 <div className="relative max-w-full max-h-[85vh]">
@@ -136,7 +145,12 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
                     src={`/media/${visual.filename}`} 
                     alt={visual.title}
                     onError={() => setHasError(true)}
-                    className="max-w-full max-h-[85vh] object-contain block"
+                    className={cn(
+                      "max-w-full max-h-[85vh] object-contain block",
+                      visual.rotation === 90 && "rotate-90",
+                      visual.rotation === 180 && "rotate-180",
+                      visual.rotation === 270 && "-rotate-90"
+                    )}
                   />
                 </div>
               )}
@@ -148,17 +162,17 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    className="absolute inset-y-0 right-0 w-72 md:w-80 bg-black/80 backdrop-blur-xl p-8 border-l border-white/10 overflow-y-auto z-[120]"
+                    className="absolute inset-y-0 right-0 w-72 md:w-80 bg-black/90 backdrop-blur-2xl p-8 border-l border-white/10 overflow-y-auto z-[120]"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <h2 className="text-2xl font-light text-white mb-6">{visual.title}</h2>
-                  <div className="text-base font-light text-white/70 leading-relaxed whitespace-pre-wrap">
+                  <div className="text-base font-light text-white/90 leading-relaxed whitespace-pre-wrap">
                     {visual.description}
                   </div>
                   {visual.highlight && (
                     <div className="mt-8 flex items-center gap-3 text-accent-warm">
                       <Star size={16} fill="currentColor" />
-                      <span className="text-xs uppercase tracking-widest">Highlighted Work</span>
+                      <span className="text-xs uppercase tracking-widest font-medium">Highlighted Work</span>
                     </div>
                   )}
                   </motion.div>

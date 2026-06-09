@@ -37,12 +37,12 @@ export default function JournalList({ entries }: JournalListProps) {
             className="group cursor-pointer py-6 flex items-baseline justify-between border-b border-white/[0.03] hover:border-white/10 transition-colors duration-500"
           >
             <div className="flex items-baseline gap-12">
-              <span className="text-xs text-white/20 tracking-widest w-24 flex-shrink-0">{entry.date}</span>
-              <h2 className="text-base font-light text-white/60 group-hover:text-white transition-colors duration-500">
+              <span className="text-xs text-text-dim tracking-widest w-24 flex-shrink-0">{entry.date}</span>
+              <h2 className="text-base font-light text-white group-hover:text-accent-warm transition-colors duration-500">
                 {entry.title}
               </h2>
             </div>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white/10 group-hover:text-white/40 transition-colors duration-500">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-dim group-hover:text-white transition-colors duration-500">
               Open Log
             </span>
           </motion.div>

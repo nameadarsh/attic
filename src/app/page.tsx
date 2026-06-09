@@ -15,12 +15,12 @@ export default function Home() {
         <h1 className="text-4xl md:text-6xl font-light tracking-tight text-white mb-8">
           A personal attic, not a museum.
         </h1>
-        <p className="text-xl md:text-2xl font-light text-white/60 max-w-2xl leading-relaxed">
+        <p className="text-xl md:text-2xl font-light text-white/90 max-w-2xl leading-relaxed">
           Poems, photographs, videos and thoughts.<br />
           Things I wanted to keep.
         </p>
         
-        <div className="mt-16 max-w-lg text-base font-light text-white/40 leading-relaxed">
+        <div className="mt-16 max-w-lg text-base font-light text-text-muted leading-relaxed">
           This is a quiet corner of the internet. A collection of fragments gathered over time. No noise, no metrics, just memory.
         </div>
       </section>
@@ -33,14 +33,26 @@ export default function Home() {
           title="Visuals" 
           href="/visuals" 
           items={visuals.slice(0, 3)} 
-          renderItem={(item) => (
-            <div className="w-[300px] md:w-[450px] aspect-[4/5] bg-white/5 rounded-sm overflow-hidden flex-shrink-0 group relative">
+          renderItem={(item: any) => (
+            <div className="w-[300px] md:w-[450px] aspect-[4/5] bg-neutral-900 rounded-sm overflow-hidden flex-shrink-0 group relative">
               {item.type === 'video' ? (
-                <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-white/40 uppercase tracking-widest text-xs">Video</div>
+                <video 
+                  src={`/media/${item.filename}`}
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-full object-cover"
+                  style={{ transform: `rotate(${item.rotation || 0}deg)` }}
+                />
               ) : (
-                <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-white/40 uppercase tracking-widest text-xs">Image</div>
+                <img 
+                  src={`/media/${item.filename}`}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                  style={{ transform: `rotate(${item.rotation || 0}deg)` }}
+                />
               )}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-end p-8">
+              <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-end p-8">
                 <span className="text-base font-light text-white">{item.title}</span>
               </div>
             </div>
@@ -53,8 +65,8 @@ export default function Home() {
           items={poems.slice(0, 3)} 
           renderItem={(item) => (
             <div className="w-[300px] md:w-[380px] aspect-[3/4] p-10 border border-white/10 bg-white/[0.03] rounded-sm flex-shrink-0 flex flex-col group hover:border-white/20 transition-colors duration-700">
-              <h3 className="text-xl font-light text-white/90 mb-6">{item.title}</h3>
-              <p className="text-base font-light text-white/50 line-clamp-8 leading-relaxed italic font-serif">
+              <h3 className="text-xl font-light text-white/95 mb-6">{item.title}</h3>
+              <p className="text-base font-light text-text-muted line-clamp-8 leading-relaxed italic font-serif">
                 {item.content}
               </p>
             </div>
@@ -67,9 +79,9 @@ export default function Home() {
           items={journalEntries.slice(0, 3)} 
           renderItem={(item) => (
             <div className="w-[320px] md:w-[420px] p-8 border border-white/10 bg-black rounded-sm flex-shrink-0 font-mono group hover:border-white/30 transition-colors duration-700">
-              <div className="text-xs text-white/40 mb-4 uppercase tracking-widest">{item.date}</div>
-              <h3 className="text-base font-light text-white/80 mb-4 group-hover:text-white transition-colors">{item.title}</h3>
-              <p className="text-sm text-white/40 line-clamp-4 leading-relaxed">
+              <div className="text-xs text-text-dim mb-4 uppercase tracking-widest">{item.date}</div>
+              <h3 className="text-base font-light text-white/90 mb-4 group-hover:text-white transition-colors">{item.title}</h3>
+              <p className="text-sm text-text-muted line-clamp-4 leading-relaxed">
                 {item.content}
               </p>
             </div>

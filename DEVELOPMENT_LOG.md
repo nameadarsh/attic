@@ -108,3 +108,33 @@ Complete, emotionally verified, build-optimized, and ready for deployment.
 
 **Final Project Status:**
 Complete, emotionally verified, secured, and build-optimized.
+
+## 2026-06-09 - Atmosphere, Readability, and Interaction Quality Pass
+
+### Visual Metadata Enhancement
+- Added support for `Rotation` field in visual metadata (0, 90, 180, 270).
+- Applied rotation consistently in homepage previews, visuals grid, and visual modal.
+- Improved rotation rendering for 90/270 degrees in `VisualCard` using scale adjustments to maintain `object-cover` integrity.
+
+### Atmosphere Pass
+- Added global `grain-overlay` and `texture-overlay` for subtle depth and "air" in the attic.
+- Enhanced `ambient-light` with slower, more complex movement.
+- Introduced layered background gradients to break "pure black" monotony while remaining dark and minimal.
+- Added subtle translation animations on hover for visual cards.
+
+### Readability Pass
+- Introduced CSS variables for consistent text hierarchy (`--text-muted`, `--text-dim`).
+- Increased contrast of hero text, secondary descriptions, and footer content.
+- Improved legibility of navigation items and section headers.
+- Enhanced modal text contrast for poems and journal entries.
+- Added backdrop-blur and semi-translucent backgrounds to modal controls for better visibility.
+
+### Interaction & Polish Audit
+- Standardized all modal transitions to a custom cubic-bezier `[0.16, 1, 0.3, 1]` for a deliberate, physical feel.
+- Refined hover states for Visuals, Poems, and Journal entries.
+- Fixed z-index layering to ensure overlays don't block interactions while remaining visually present.
+- Improved modal control buttons with rounded backgrounds and better focus states.
+- Verified production build success and route integrity.
+
+**Final Status:**
+The project now feels more "lived-in" with a tangible atmosphere and high readability, while strictly adhering to the "quiet attic" philosophy.

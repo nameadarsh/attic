@@ -11,6 +11,7 @@ export interface VisualMetadata extends BaseMetadata {
   description: string;
   filename: string;
   type: 'image' | 'video';
+  rotation: number;
 }
 
 export interface PoemMetadata extends BaseMetadata {

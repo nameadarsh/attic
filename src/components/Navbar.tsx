@@ -3,12 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '@/lib/utils';
 
 const navItems = [
   { name: 'Home', href: '/' },
@@ -31,7 +26,7 @@ export default function Navbar() {
               href={item.href}
               className={cn(
                 "relative text-[10px] md:text-xs uppercase tracking-[0.3em] transition-colors duration-500",
-                isActive ? "text-white font-medium" : "text-white/30 hover:text-white/70"
+                isActive ? "text-white font-medium" : "text-text-muted hover:text-white"
               )}
             >
               {item.name}

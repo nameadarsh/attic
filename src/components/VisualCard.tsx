@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { VisualMetadata } from '@/types';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 interface VisualCardProps {
   visual: VisualMetadata;
@@ -54,28 +55,40 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
           loop
           playsInline
           onError={() => setHasError(true)}
-          className="w-full h-full object-cover transition-opacity duration-700"
+          className={cn(
+            "w-full h-full object-cover transition-opacity duration-700",
+            visual.rotation === 90 && "rotate-90 scale-[1.25]",
+            visual.rotation === 180 && "rotate-180",
+            visual.rotation === 270 && "-rotate-90 scale-[1.25]"
+          )}
         />
       ) : (
-        <Image
-          src={`/media/${visual.filename}`}
-          alt={visual.title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          onError={() => setHasError(true)}
-          className="w-full h-full object-cover transition-opacity duration-1000"
-        />
+        <div className="relative w-full h-full overflow-hidden">
+          <Image
+            src={`/media/${visual.filename}`}
+            alt={visual.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={() => setHasError(true)}
+            className={cn(
+              "w-full h-full object-cover transition-opacity duration-1000",
+              visual.rotation === 90 && "rotate-90 scale-[1.25]",
+              visual.rotation === 180 && "rotate-180",
+              visual.rotation === 270 && "-rotate-90 scale-[1.25]"
+            )}
+          />
+        </div>
       )}
 
       {/* Vignette Overlay */}
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
       {/* Content */}
-      <div className="absolute inset-0 p-8 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-700">
+      <div className="absolute inset-0 p-8 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-2 group-hover:translate-y-0">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-light text-white/90 tracking-wide">{visual.title}</h3>
+          <h3 className="text-sm font-light text-white tracking-wide">{visual.title}</h3>
         </div>
-        <p className="text-[11px] font-light text-white/50 line-clamp-2 leading-relaxed tracking-wide">
+        <p className="text-xs font-light text-white/80 line-clamp-2 leading-relaxed tracking-wide">
           {visual.description}
         </p>
       </div>

@@ -60,6 +60,8 @@ function parseCustomFormat(fileContent: string) {
       } else if (key === 'media') {
         // Handle media as an array for journals
         data[key] = value.split(',').map(m => m.trim()).filter(Boolean);
+      } else if (key === 'rotation') {
+        data[key] = parseInt(value, 10) || 0;
       } else {
         data[key] = value;
       }
@@ -99,7 +101,7 @@ export function syncMediaMetadata() {
     const metaFilePath = path.join(WORKS_CONTENT_PATH, metaFileName);
 
     if (!fs.existsSync(metaFilePath)) {
-      const defaultMetadata = `Title: ${baseName}\nPublished: 0\nHighlight: 0\n\n`;
+      const defaultMetadata = `Title: ${baseName}\nPublished: 0\nHighlight: 0\nRotation: 0\n\n`;
       try {
         fs.writeFileSync(metaFilePath, defaultMetadata);
       } catch (e) {
@@ -148,7 +150,8 @@ export function getAllVisuals(): VisualMetadata[] {
       slug: slugify(data.title || baseName),
       description: content,
       filename: mediaFile,
-      type: type as 'image' | 'video'
+      type: type as 'image' | 'video',
+      rotation: data.rotation ?? 0
     } as VisualMetadata;
   }).filter((v): v is VisualMetadata => v !== null && v.published);
 
