@@ -39,6 +39,8 @@ All content is fully co-located. The source of truth for all memories is the `co
 ```text
 ├── content/              # The Attic
 │   ├── works/            # Photographs and Videos (Falling Trees)
+│   │   ├── visuals/      # Only media files (.jpg, .mp4)
+│   │   └── descriptions/ # Only metadata files (.md)
 │   ├── poems/            # Poems (Phir Bhi)
 │   └── journal/          # Journal Entries (Hero Kaun)
 ```
@@ -49,14 +51,11 @@ The easiest way to add content is to use the `_skeleton.md` file found inside ea
 
 ### Adding A Photo or Video (Falling Trees)
 
-1. Navigate to the `content/works/` folder.
-2. Upload your media file (e.g., `my-photo.jpg`).
-3. Duplicate `_skeleton.md` and rename it to match exactly: `my-photo.md`.
-4. Edit `my-photo.md`:
-   - Set `Title: Your Title`
-   - Set `Published: 1`
-   - Add your description below the metadata.
-5. Commit and push.
+1. Upload your media file (e.g., `my-photo.jpg`) to the `content/works/visuals/` folder.
+2. Metadata appears automatically. (If adding locally, run `npm run generate`. If uploading via GitHub web, it will be generated within 30 seconds).
+3. Open the newly generated `my-photo.md` inside `content/works/descriptions/` and edit the metadata (set `Published: 1`, add description).
+4. Commit your changes.
+5. Content appears on the site!
 
 ### Adding A Poem (Phir Bhi)
 
@@ -84,9 +83,9 @@ The easiest way to add content is to use the `_skeleton.md` file found inside ea
 
 If you are uploading from a mobile device or quickly adding a photo directly through the GitHub Web UI without creating the `.md` file, the attic will help you:
 
-1. Upload your photo (e.g., `sunset.jpg`) to `content/works/` and commit.
+1. Upload your photo (e.g., `sunset.jpg`) to `content/works/visuals/` and commit.
 2. Within 30 seconds, a GitHub Action will run in the background.
-3. It will automatically generate `sunset.md` with default metadata (`Published: 0`) and commit it to your repository.
+3. It will automatically generate `sunset.md` inside `content/works/descriptions/` with default metadata (`Published: 0`) and commit it to your repository.
 4. You can then edit `sunset.md` in the GitHub UI, set `Published: 1`, write your description, and save.
 
 *No manual alignment is required.*
@@ -112,7 +111,7 @@ During the build step, the system securely synchronizes the co-located media to 
 **"I uploaded a photo but it's not appearing!"**
 1. **Check Published Status**: Did you set `Published: 1` in the `.md` file? By default, the auto-generator sets it to `0`.
 2. **Check Filenames**: The `.jpg` and `.md` must have the exact same base name. `NightSky.jpg` and `nightsky.md` will NOT link together due to casing differences.
-3. **Check Extensions**: The system only supports `.jpg`, `.jpeg`, `.png`, `.webp`, and `.mp4`. HEIC from iPhones must be converted first.
+3. **Check Extensions**: The system only supports web-safe formats (`.jpg`, `.jpeg`, `.png`, `.webp`, `.mp4`, `.gif`). **RAW images (`.dng`) and iPhone HEIC files are explicitly NOT supported** because web browsers cannot render them natively. Please convert your files before uploading.
 
 ---
 "Be kind."

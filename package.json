@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "generate": "node scripts/generate-metadata.mjs",
     "predev": "node scripts/sync-media.mjs",
     "prebuild": "node scripts/sync-media.mjs",
     "dev": "next dev",

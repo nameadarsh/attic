@@ -19,13 +19,14 @@ jobs:
 
       - name: Generate Missing Works Metadata
         run: |
-          cd content/works
-          for f in *.{jpg,jpeg,png,webp,mp4}; do
+          mkdir -p content/works/visuals content/works/descriptions
+          cd content/works/visuals
+          for f in *.{jpg,jpeg,png,webp,mp4,gif}; do
             [ -e "$f" ] || continue
             base="${f%.*}"
-            if [ ! -f "$base.md" ] && [ ! -f "$base.txt" ]; then
+            if [ ! -f "../descriptions/$base.md" ] && [ ! -f "../descriptions/$base.txt" ]; then
               echo "Generating metadata for works: $f"
-              cat <<EOF > "$base.md"
+              cat <<EOF > "../descriptions/$base.md"
 Title: $base
 Published: 0
 Highlight: 0

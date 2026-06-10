@@ -81,21 +81,24 @@ function parseCustomFormat(fileContent: string) {
  * Gets all visuals (images/videos) with their metadata
  */
 export function getAllVisuals(): VisualMetadata[] {
-  if (!fs.existsSync(WORKS_CONTENT_PATH)) return [];
+  const descriptionsDir = path.join(WORKS_CONTENT_PATH, 'descriptions');
+  const visualsDir = path.join(WORKS_CONTENT_PATH, 'visuals');
 
-  const files = fs.readdirSync(WORKS_CONTENT_PATH).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
+  if (!fs.existsSync(descriptionsDir) || !fs.existsSync(visualsDir)) return [];
+
+  const files = fs.readdirSync(descriptionsDir).filter(f => !f.startsWith('_') && (f.endsWith('.md') || f.endsWith('.txt')));
   
   const visuals = files.map(file => {
-    const contentData = getFileContent('works', file);
+    const contentData = getFileContent('works/descriptions', file);
     if (!contentData) return null;
     
     const { data, content } = contentData;
     const baseName = path.parse(file).name;
-    // Find corresponding media file in the same directory (co-located)
-    const allFiles = fs.readdirSync(WORKS_CONTENT_PATH);
+    // Find corresponding media file in the visuals directory
+    const allFiles = fs.readdirSync(visualsDir);
     const mediaFile = allFiles.find(m => 
       path.parse(m).name === baseName && 
-      /\.(jpg|jpeg|png|webp|mp4)$/i.test(m)
+      /\.(jpg|jpeg|png|webp|mp4|gif)$/i.test(m)
     );
     
     if (!mediaFile) return null; // Filter out if no media exists

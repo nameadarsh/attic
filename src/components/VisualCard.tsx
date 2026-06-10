@@ -19,15 +19,8 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    if (visual.type === 'video' && videoRef.current) {
-      if (isHovered && !hasError) {
-        videoRef.current.play().catch(() => setHasError(true));
-      } else {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
-      }
-    }
-  }, [isHovered, visual.type, hasError]);
+    // Only handling errors now since autoPlay handles the playing
+  }, [hasError]);
 
   if (hasError) return null; // Issue 3: Hide broken visuals
 
@@ -41,7 +34,7 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
       tabIndex={0}
       role="button"
       aria-label={`View ${visual.title}`}
-      className="relative aspect-[4/5] bg-neutral-900 overflow-hidden cursor-pointer group rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-accent-warm/50"
+      className="relative bg-neutral-900 overflow-hidden cursor-pointer group rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-accent-warm/50"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
@@ -53,25 +46,27 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
           src={`/media/${visual.filename}`}
           muted
           loop
+          autoPlay
           playsInline
           onError={() => setHasError(true)}
           className={cn(
-            "w-full h-full object-cover transition-opacity duration-700",
+            "w-full h-auto object-cover transition-opacity duration-700 block",
             visual.rotation === 90 && "rotate-90 scale-[1.25]",
             visual.rotation === 180 && "rotate-180",
             visual.rotation === 270 && "-rotate-90 scale-[1.25]"
           )}
         />
       ) : (
-        <div className="relative w-full h-full overflow-hidden">
+        <div className="relative w-full h-auto overflow-hidden block">
           <Image
             src={`/media/${visual.filename}`}
             alt={visual.title}
-            fill
+            width={0}
+            height={0}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             onError={() => setHasError(true)}
             className={cn(
-              "w-full h-full object-cover transition-opacity duration-1000",
+              "w-full h-auto transition-opacity duration-1000",
               visual.rotation === 90 && "rotate-90 scale-[1.25]",
               visual.rotation === 180 && "rotate-180",
               visual.rotation === 270 && "-rotate-90 scale-[1.25]"

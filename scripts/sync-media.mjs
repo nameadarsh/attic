@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const ROOT_DIR = process.cwd();
-const WORKS_SRC = path.join(ROOT_DIR, 'content', 'works');
+const WORKS_SRC = path.join(ROOT_DIR, 'content', 'works', 'visuals');
 const JOURNAL_SRC = path.join(ROOT_DIR, 'content', 'journal');
 const WORKS_DEST = path.join(ROOT_DIR, 'public', 'media');
 const JOURNAL_DEST = path.join(ROOT_DIR, 'public', 'journal_media');

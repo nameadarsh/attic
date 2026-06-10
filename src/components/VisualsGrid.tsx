@@ -25,9 +25,9 @@ export default function VisualsGrid({ visuals }: VisualsGridProps) {
 
   return (
     <>
-      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 md:gap-10 lg:gap-12 space-y-6 md:space-y-10 lg:space-y-12">
+      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 md:gap-10 lg:gap-12">
         {visuals.map((visual) => (
-          <div key={visual.slug} className="break-inside-avoid">
+          <div key={visual.slug} className="break-inside-avoid mb-6 md:mb-10 lg:mb-12">
             <VisualCard
               visual={visual}
               onClick={() => openVisual(visual)}
