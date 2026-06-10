@@ -312,3 +312,49 @@ Modal viewers (`VisualViewer`, `PoemReader`, `JournalReader`) used `window.histo
 - SSR content markers match URL for all routes including legacy redirects (HTTP 308 → correct page)
 - No `pushState` references remain in source
 - Production build succeeded
+
+## 2026-06-10 - Phase 13: Content Workflow Redesign & Bug Fixes
+
+### Missing Content Bug Resolution
+- **Root Cause Identified**: The `syncMediaMetadata` function generated `Published: 0` files in Vercel's ephemeral build environment. Since they weren't committed, users couldn't see or change them, leaving media permanently hidden. Folder discrepancy (`media/` vs `public/media/`) also contributed.
+- **Fix Applied**: Removed ephemeral build-time generation. Shifted to a pure co-located architecture.
+
+### Co-Located Content Architecture
+- **Structure Redesign**: Media and `.md` files now live side-by-side in `content/works/` and `content/journal/`.
+- **Pre-Build Syncing**: Created `scripts/sync-media.mjs` tied to `predev` and `prebuild` npm hooks. This seamlessly copies media to `public/` during the build, preserving the static zero-proxy requirement while radically improving authoring UX.
+- **Auto-Metadata via GitHub Actions**: Added `.github/workflows/auto-metadata.yml`. If a user uploads a photo via the GitHub web UI or mobile without a `.md` file, a GitHub Action intercepts it, creates the skeleton metadata, and commits it back. The file "magically appears" for the user to edit.
+
+### Visual & Atmospheric Refinements
+- **Masonry Grid**: Rewrote `VisualsGrid.tsx` to use CSS `columns` (`columns-1 sm:columns-2 lg:columns-3 xl:columns-4`) for a true Pinterest-style interlocking masonry layout.
+- **Atmosphere Simplification**: Removed procedural SVG starfields and complex geometric noise patterns from `globals.css` and `layout.tsx` to eliminate the "synthetic" feel, leaving a pure, subtle film-grain overlay (`feTurbulence`).
+- **README Rewrite**: Wrote a non-technical, user-friendly `README.md` focusing entirely on authoring content using the new `_skeleton.md` files and automatic metadata system.
+
+## 2026-06-10 - Phase 14: Fluid Atmosphere Refinement
+
+### The Problem
+The implementation of film grain alone failed to achieve the requested "air behind the content." It felt like a flat, 2D textured black page rather than a deep, lived-in space.
+
+### The Solution (Alternative A)
+- **Fluid Gradients**: Implemented an `.ambient-fluid-container` beneath the grain layer.
+- **Extreme Subtlety**: Used three incredibly soft, oversized radial gradients (`140vw` to `160vw`) positioned off-center.
+- **Low Contrast Earth Tones**: Chose `#0e0b08`, `#120d09`, and `#0a0806` against the `#080808` background. The contrast is barely perceptible but breaks the absolute blackness.
+- **Imperceptible Movement**: Applied CSS keyframe animations translating the gradients 3-5% over 90, 110, and 120-second cycles. This creates "breathing" and volumetric lighting without crossing into "animated" territory.
+- **Dithering**: Kept the SVG `feTurbulence` grain overlay at 5% opacity to dither the gradients and prevent CSS banding, ensuring the gradients look like natural light falloff rather than digital artifacts.
+
+### Final Atmosphere Evaluation
+- **Less flat**: Yes, the shifting light creates a sense of spatial depth behind the content panes.
+- **More alive**: The 120-second cycle gives the room "air" and breathing room without demanding attention.
+- **Not distracting**: The edges of the gradients are entirely off-screen, preventing "blob" aesthetics, and the contrast is so low it does not compete with the foreground typography or media.
+- **Typography**: Paused typography changes in "Phir Bhi" and "Hero Kaun" as requested, keeping the focus entirely on the foundational atmosphere.
+
+## 2026-06-10 - Phase 15: Galaxy Starfield Interactive Background
+
+### The Pivot
+The user rejected the fluid gradient implementation, stating it felt too "grey/brown" and requested the interactive 3D galaxy starfield previously built for their Vite portfolio (`adarshbajpai.com`), adapted for a quiet, subtle vibe.
+
+### Implementation Details
+- **Architectural Shift**: Installed `three`, `@react-three/fiber`, `@react-three/drei`, and `maath`. 
+- **Client Component**: Created `src/components/GalaxyBackground.tsx` and marked it with `"use client"` to run the 3D `<Canvas>` correctly within the Next.js 15 App Router environment.
+- **Physics & Interactivity**: Ported the exact physics logic from the portfolio. The system calculates the inverse Euler rotation to determine mouse proximity to rotating particles, subtly repelling them when hovered and easing them back into place.
+- **Aesthetic Adaptation**: Changed the aggressive neon cyan (`#00f5d4`) to a warm, transparent gold (`#d4a373` at `opacity: 0.8`) and reduced particle size to ensure the background feels like a "subtle, quiet attic galaxy" rather than a sci-fi environment. Added a soft radial gradient vignette (`transparent` to `#080808`) over the canvas to blend the edges seamlessly.
+- **CSS Cleanup**: Deleted all experimental fluid gradient code (`.ambient-fluid-container`, `.fluid-orb`) from `globals.css` and injected `<GalaxyBackground />` universally via `layout.tsx`.

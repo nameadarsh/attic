@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import GalaxyBackground from "@/components/GalaxyBackground";
 
 export const metadata: Metadata = {
   title: "ATTIC",
@@ -18,13 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased min-h-screen selection:bg-accent-warm/30">
+        <GalaxyBackground />
         <div className="grain-overlay" />
-        <div className="texture-overlay" />
-        <div className="ambient-light" />
-        <div className="starfield">
-          <div className="star-layer" />
-          <div className="star-layer-slow" />
-        </div>
         <main className="relative z-10">
           {children}
         </main>

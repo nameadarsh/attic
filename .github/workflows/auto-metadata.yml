@@ -1,0 +1,69 @@
+name: Generate Missing Metadata
+
+on:
+  push:
+    paths:
+      - 'content/works/**'
+      - 'content/journal/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Generate Missing Works Metadata
+        run: |
+          cd content/works
+          for f in *.{jpg,jpeg,png,webp,mp4}; do
+            [ -e "$f" ] || continue
+            base="${f%.*}"
+            if [ ! -f "$base.md" ] && [ ! -f "$base.txt" ]; then
+              echo "Generating metadata for works: $f"
+              cat <<EOF > "$base.md"
+Title: $base
+Published: 0
+Highlight: 0
+Rotation: 0
+
+[Description for $base]
+EOF
+            fi
+          done
+
+      - name: Generate Missing Journal Metadata
+        run: |
+          cd content/journal
+          for f in *.{jpg,jpeg,png,webp,mp4}; do
+            [ -e "$f" ] || continue
+            base="${f%.*}"
+            if [ ! -f "$base.md" ] && [ ! -f "$base.txt" ]; then
+              echo "Generating metadata for journal: $f"
+              cat <<EOF > "$base.md"
+Title: $base
+Date: $(date +%Y-%m-%d)
+Published: 0
+Highlight: 0
+Media: $f
+
+[Journal entry for $base]
+EOF
+            fi
+          done
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "chore: auto-generate missing metadata files"
+            git push
+          else
+            echo "No missing metadata files to generate."
+          fi

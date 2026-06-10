@@ -75,56 +75,13 @@ function parseCustomFormat(fileContent: string) {
   return { data, content };
 }
 
-/**
- * Ensures metadata exists for all media files in the media/ directory
- * If a media file exists without a corresponding metadata file in content/works/,
- * it creates one with default values.
- */
-export function syncMediaMetadata() {
-  if (!fs.existsSync(MEDIA_PATH)) return;
-  if (!fs.existsSync(WORKS_CONTENT_PATH)) {
-    try {
-      fs.mkdirSync(WORKS_CONTENT_PATH, { recursive: true });
-    } catch (e) {
-      console.error('Failed to create works directory', e);
-      return;
-    }
-  }
 
-  const mediaFiles = fs.readdirSync(MEDIA_PATH).filter(file => 
-    /\.(jpg|jpeg|png|webp|mp4)$/i.test(file)
-  );
-
-  mediaFiles.forEach(mediaFile => {
-    const baseName = path.parse(mediaFile).name;
-    const metaFileName = `${baseName}.md`;
-    const metaFilePath = path.join(WORKS_CONTENT_PATH, metaFileName);
-
-    if (!fs.existsSync(metaFilePath)) {
-      const defaultMetadata = `Title: ${baseName}\nPublished: 0\nHighlight: 0\nRotation: 0\n\n`;
-      try {
-        fs.writeFileSync(metaFilePath, defaultMetadata);
-      } catch (e) {
-        console.error(`Failed to write metadata for ${mediaFile}`, e);
-      }
-    }
-  });
-}
-
-let visualsCache: VisualMetadata[] | null = null;
-let poemsCache: PoemMetadata[] | null = null;
-let journalCache: JournalMetadata[] | null = null;
 
 /**
  * Gets all visuals (images/videos) with their metadata
  */
 export function getAllVisuals(): VisualMetadata[] {
-  if (visualsCache && process.env.NODE_ENV === 'production') return visualsCache;
-  
-  syncMediaMetadata();
-  
   if (!fs.existsSync(WORKS_CONTENT_PATH)) return [];
-  if (!fs.existsSync(MEDIA_PATH)) return [];
 
   const files = fs.readdirSync(WORKS_CONTENT_PATH).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
   
@@ -134,12 +91,14 @@ export function getAllVisuals(): VisualMetadata[] {
     
     const { data, content } = contentData;
     const baseName = path.parse(file).name;
+    // Find corresponding media file in the same directory (co-located)
+    const allFiles = fs.readdirSync(WORKS_CONTENT_PATH);
+    const mediaFile = allFiles.find(m => 
+      path.parse(m).name === baseName && 
+      /\.(jpg|jpeg|png|webp|mp4)$/i.test(m)
+    );
     
-    // Find corresponding media file
-    const mediaFiles = fs.readdirSync(MEDIA_PATH);
-    const mediaFile = mediaFiles.find(m => path.parse(m).name === baseName);
-    
-    if (!mediaFile) return null; // Issue 1 Fix: Filter out if no media exists
+    if (!mediaFile) return null; // Filter out if no media exists
 
     const type = mediaFile.toLowerCase().endsWith('.mp4') ? 'video' : 'image';
 
@@ -155,9 +114,7 @@ export function getAllVisuals(): VisualMetadata[] {
     } as VisualMetadata;
   }).filter((v): v is VisualMetadata => v !== null && v.published);
 
-  // Issue 2 Fix: Handle duplicate slugs
-  visualsCache = ensureUniqueSlugs(visuals);
-  return visualsCache;
+  return ensureUniqueSlugs(visuals);
 }
 
 function ensureUniqueSlugs<T extends { slug: string }>(items: T[]): T[] {
@@ -177,7 +134,6 @@ function ensureUniqueSlugs<T extends { slug: string }>(items: T[]): T[] {
  * Gets all poems
  */
 export function getAllPoems(): PoemMetadata[] {
-  if (poemsCache && process.env.NODE_ENV === 'production') return poemsCache;
   
   const poemDir = path.join(CONTENT_PATH, 'poems');
   if (!fs.existsSync(poemDir)) return [];
@@ -206,15 +162,13 @@ export function getAllPoems(): PoemMetadata[] {
     } as PoemMetadata;
   }).filter((p): p is PoemMetadata => p !== null && p.published);
 
-  poemsCache = ensureUniqueSlugs(poems);
-  return poemsCache;
+  return ensureUniqueSlugs(poems);
 }
 
 /**
  * Gets all journal entries
  */
 export function getAllJournalEntries(): JournalMetadata[] {
-  if (journalCache && process.env.NODE_ENV === 'production') return journalCache;
   
   const journalDir = path.join(CONTENT_PATH, 'journal');
   if (!fs.existsSync(journalDir)) return [];
@@ -245,6 +199,5 @@ export function getAllJournalEntries(): JournalMetadata[] {
     } as JournalMetadata;
   }).filter((j): j is JournalMetadata => j !== null && j.published);
 
-  journalCache = ensureUniqueSlugs(entries);
-  return journalCache;
+  return ensureUniqueSlugs(entries);
 }

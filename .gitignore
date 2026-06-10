@@ -31,3 +31,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# synced media (source of truth is in content/)
+/public/media/*
+!/public/media/.gitkeep
+/public/journal_media/*
+!/public/journal_media/.gitkeep

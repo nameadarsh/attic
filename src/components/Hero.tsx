@@ -23,8 +23,6 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* Hero Background Effect */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none" />
     </section>
   );
 }

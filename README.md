@@ -32,75 +32,87 @@ npm run build
 npm start
 ```
 
-## Content System: Adding New Entries
+## Folder Structure
 
-The project is entirely content-driven from repository files. You can use either `.md` or `.txt` formats.
-
-### 1. Falling Trees (Images & Videos)
-- **Step 1:** Drop your media file (`.jpg`, `.png`, `.webp`, `.mp4`) into the `public/media/` directory.
-- **Step 2:** Start the dev server. A metadata file with the same name will be automatically created in `content/works/`.
-- **Step 3:** Edit the file in `content/works/` to add a description and set `Published: 1`.
-
-**Format:**
-```text
-Title: My Photograph
-Published: 1
-Highlight: 0
-
-The description of the moment goes here.
-```
-
-### 2. Phir Bhi (Poems)
-- **Step 1:** Create a new file in `content/poems/`.
-- **Step 2:** Use the following format:
-
-**Format:**
-```text
-Title: A Quiet Evening
-Published: 1
-Highlight: 1
-
-Your poem text starts here.
-Spacing and line breaks are preserved.
-```
-
-### 3. Hero Kaun (Journal)
-- **Step 1:** Create a new file in `content/journal/`.
-- **Step 2:** If you have media for the entry, put it in `public/journal_media/`.
-- **Step 3:** Use the following format:
-
-**Format:**
-```text
-Title: Trip to the Hills
-Date: 2026-06-09
-Published: 1
-Highlight: 0
-Media: hills.jpg, sunset.mp4
-
-Your journal entry text goes here.
-Media filenames should match the files in public/journal_media/.
-```
-
-## Project Structure
+All content is fully co-located. The source of truth for all memories is the `content/` folder.
 
 ```text
-├── public/               # Static assets
-│   ├── media/            # Images and videos for Visuals
-│   └── journal_media/    # Images and videos for Journal entries
-├── content/              # All text-based content
-│   ├── works/            # Visuals metadata
-│   ├── poems/            # Poem entries
-│   └── journal/          # Journal (Hero Kaun) entries
-├── ATTIC_SPECIFICATION.md # Project source of truth
-└── DEVELOPMENT_LOG.md    # History of implementation
+├── content/              # The Attic
+│   ├── works/            # Photographs and Videos (Falling Trees)
+│   ├── poems/            # Poems (Phir Bhi)
+│   └── journal/          # Journal Entries (Hero Kaun)
 ```
 
-## Design Philosophy
+## Adding Content
 
-- **Warmth over Polish:** Prefers a "lived-in" feel.
-- **Restraint over Decoration:** Minimal animations, lots of whitespace.
-- **Content over Interface:** The UI should disappear to let the memories speak.
-- **Timelessness over Trends:** No trendy gradients, blobs, or "creative developer" tropes.
+The easiest way to add content is to use the `_skeleton.md` file found inside each folder.
+
+### Adding A Photo or Video (Falling Trees)
+
+1. Navigate to the `content/works/` folder.
+2. Upload your media file (e.g., `my-photo.jpg`).
+3. Duplicate `_skeleton.md` and rename it to match exactly: `my-photo.md`.
+4. Edit `my-photo.md`:
+   - Set `Title: Your Title`
+   - Set `Published: 1`
+   - Add your description below the metadata.
+5. Commit and push.
+
+### Adding A Poem (Phir Bhi)
+
+1. Navigate to the `content/poems/` folder.
+2. Duplicate `_skeleton.md` and rename it (e.g., `my-poem.md`).
+3. Edit `my-poem.md`:
+   - Set `Title: Your Title`
+   - Set `Published: 1`
+   - Add your poem text below the metadata. Line breaks will be preserved.
+4. Commit and push.
+
+### Adding A Journal Entry (Hero Kaun)
+
+1. Navigate to the `content/journal/` folder.
+2. Upload any media for the entry (e.g., `delhi-trip.jpg`).
+3. Duplicate `_skeleton.md` and rename it (e.g., `delhi-trip.md`).
+4. Edit `delhi-trip.md`:
+   - Set `Title: Your Title`
+   - Set `Published: 1`
+   - Set `Media: delhi-trip.jpg`
+   - Add your journal text below the metadata.
+5. Commit and push.
+
+## Automatic Metadata Generation (GitHub Workflow)
+
+If you are uploading from a mobile device or quickly adding a photo directly through the GitHub Web UI without creating the `.md` file, the attic will help you:
+
+1. Upload your photo (e.g., `sunset.jpg`) to `content/works/` and commit.
+2. Within 30 seconds, a GitHub Action will run in the background.
+3. It will automatically generate `sunset.md` with default metadata (`Published: 0`) and commit it to your repository.
+4. You can then edit `sunset.md` in the GitHub UI, set `Published: 1`, write your description, and save.
+
+*No manual alignment is required.*
+
+## Metadata Fields
+
+- `Title`: The human-readable title of the piece.
+- `Published`: Must be `1` or `true` for the item to appear on the site.
+- `Highlight`: Set to `1` or `true` to display a small star next to the item.
+- `Rotation`: (Visuals only) Rotate media. `0`, `90`, `180`, `270`.
+- `Date`: (Journal only) Format `YYYY-MM-DD`.
+- `Media`: (Journal only) Comma-separated list of media filenames in the same folder.
+
+## Deployment
+
+The project is deployed via Vercel. 
+Any push to the main branch on GitHub will automatically trigger a production build and deploy to `attic.adarshbajpai.com`. 
+
+During the build step, the system securely synchronizes the co-located media to the static folder. No runtime API calls or backend infrastructure is used.
+
+## Troubleshooting & Common Mistakes
+
+**"I uploaded a photo but it's not appearing!"**
+1. **Check Published Status**: Did you set `Published: 1` in the `.md` file? By default, the auto-generator sets it to `0`.
+2. **Check Filenames**: The `.jpg` and `.md` must have the exact same base name. `NightSky.jpg` and `nightsky.md` will NOT link together due to casing differences.
+3. **Check Extensions**: The system only supports `.jpg`, `.jpeg`, `.png`, `.webp`, and `.mp4`. HEIC from iPhones must be converted first.
 
 ---
 "Be kind."
