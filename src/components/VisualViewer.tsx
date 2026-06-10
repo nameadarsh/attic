@@ -18,26 +18,16 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (visual) {
-      window.history.pushState(null, '', `/visuals/${visual.slug}`);
-      document.body.style.overflow = 'hidden';
-      setHasError(false); // Reset error state for new visual
-      
-      // Focus management: focus the modal when it opens
-      modalRef.current?.focus();
-    } else {
-      window.history.pushState(null, '', '/visuals');
-      document.body.style.overflow = 'auto';
-    }
+    if (!visual) return;
 
-    const handlePopState = () => onClose();
+    document.body.style.overflow = 'hidden';
+    setHasError(false);
+    modalRef.current?.focus();
+
     const handleEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    
-    window.addEventListener('popstate', handlePopState);
     window.addEventListener('keydown', handleEsc);
-    
+
     return () => {
-      window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = 'auto';
     };
@@ -64,50 +54,50 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
         onClick={(e) => e.target === e.currentTarget && onClose()}
         role="dialog"
         aria-modal="true"
-        aria-label={`Visual viewer: ${visual.title}`}
+        aria-label={`Falling Trees viewer: ${visual.title}`}
         tabIndex={-1}
         ref={modalRef}
       >
         {/* Controls */}
-        <div className="absolute top-6 right-6 flex items-center gap-2 md:gap-4 z-[110]">
+        <div className="absolute top-6 right-6 flex items-center gap-1 md:gap-2 z-[110]">
           <button 
             onClick={() => setZoom(prev => Math.min(prev + 0.2, 3))} 
-            className="p-2 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full"
+            className="p-4 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full group"
             aria-label="Zoom in"
           >
-            <ZoomIn size={20} />
+            <ZoomIn size={20} className="group-hover:scale-110 transition-transform" />
           </button>
           <button 
             onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.5))} 
-            className="p-2 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full"
+            className="p-4 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full group"
             aria-label="Zoom out"
           >
-            <ZoomOut size={20} />
+            <ZoomOut size={20} className="group-hover:scale-110 transition-transform" />
           </button>
           <button 
             onClick={() => setShowInfo(!showInfo)} 
             className={cn(
-              "p-2 transition-colors bg-black/20 backdrop-blur-md rounded-full",
+              "p-4 transition-colors bg-black/20 backdrop-blur-md rounded-full group",
               showInfo ? 'text-accent-warm' : 'text-white/60 hover:text-white'
             )}
             aria-label="Show info"
             aria-pressed={showInfo}
           >
-            <Info size={20} />
+            <Info size={20} className="group-hover:scale-110 transition-transform" />
           </button>
           <button 
             onClick={handleShare} 
-            className="p-2 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full"
+            className="p-4 text-white/60 hover:text-white transition-colors bg-black/20 backdrop-blur-md rounded-full group"
             aria-label="Share"
           >
-            <Share2 size={20} />
+            <Share2 size={20} className="group-hover:scale-110 transition-transform" />
           </button>
           <button 
             onClick={onClose} 
-            className="p-2 text-white/60 hover:text-white transition-colors ml-4 bg-black/20 backdrop-blur-md rounded-full"
+            className="p-4 text-white/60 hover:text-white transition-colors ml-2 bg-black/40 backdrop-blur-md rounded-full group border border-white/10"
             aria-label="Close"
           >
-            <X size={24} />
+            <X size={24} className="group-hover:scale-110 transition-transform" />
           </button>
         </div>
 
@@ -162,7 +152,7 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    className="absolute inset-y-0 right-0 w-72 md:w-80 bg-black/90 backdrop-blur-2xl p-8 border-l border-white/10 overflow-y-auto z-[120]"
+                    className="absolute inset-y-0 right-0 w-72 md:w-96 bg-black/95 backdrop-blur-3xl p-10 border-l border-white/10 overflow-y-auto z-[120]"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <h2 className="text-2xl font-light text-white mb-6">{visual.title}</h2>

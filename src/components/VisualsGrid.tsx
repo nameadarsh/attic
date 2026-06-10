@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import VisualCard from '@/components/VisualCard';
 import VisualViewer from '@/components/VisualViewer';
 import { VisualMetadata } from '@/types';
@@ -11,26 +10,27 @@ interface VisualsGridProps {
 }
 
 export default function VisualsGrid({ visuals }: VisualsGridProps) {
-  const [selectedVisual, setSelectedVisual] = useState<VisualMetadata | null>(null);
   const params = useParams();
+  const router = useRouter();
+  const slug = typeof params?.slug === 'string' ? params.slug : undefined;
+  const selectedVisual = slug ? visuals.find((v) => v.slug === slug) ?? null : null;
 
-  useEffect(() => {
-    if (params?.slug) {
-      const visual = visuals.find(v => v.slug === params.slug);
-      if (visual) {
-        setSelectedVisual(visual);
-      }
-    }
-  }, [params, visuals]);
+  const openVisual = (visual: VisualMetadata) => {
+    router.push(`/FallingTrees/${visual.slug}`);
+  };
+
+  const closeVisual = () => {
+    router.push('/FallingTrees');
+  };
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10 lg:gap-12">
         {visuals.map((visual) => (
-          <VisualCard 
-            key={visual.slug} 
-            visual={visual} 
-            onClick={() => setSelectedVisual(visual)} 
+          <VisualCard
+            key={visual.slug}
+            visual={visual}
+            onClick={() => openVisual(visual)}
           />
         ))}
       </div>
@@ -41,10 +41,7 @@ export default function VisualsGrid({ visuals }: VisualsGridProps) {
         </div>
       )}
 
-      <VisualViewer 
-        visual={selectedVisual} 
-        onClose={() => setSelectedVisual(null)} 
-      />
+      <VisualViewer visual={selectedVisual} onClose={closeVisual} />
     </>
   );
 }

@@ -81,14 +81,14 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
       )}
 
       {/* Vignette Overlay */}
-      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
       {/* Content */}
       <div className="absolute inset-0 p-8 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-2 group-hover:translate-y-0">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-light text-white tracking-wide">{visual.title}</h3>
+          <h3 className="text-sm font-light text-white tracking-wide group-hover:text-accent-warm transition-colors duration-500">{visual.title}</h3>
         </div>
-        <p className="text-xs font-light text-white/80 line-clamp-2 leading-relaxed tracking-wide">
+        <p className="text-xs font-light text-white/90 line-clamp-2 leading-relaxed tracking-wide">
           {visual.description}
         </p>
       </div>

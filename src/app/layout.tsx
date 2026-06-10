@@ -21,9 +21,14 @@ export default function RootLayout({
         <div className="grain-overlay" />
         <div className="texture-overlay" />
         <div className="ambient-light" />
+        <div className="starfield">
+          <div className="star-layer" />
+          <div className="star-layer-slow" />
+        </div>
         <main className="relative z-10">
           {children}
         </main>
+        <Navbar />
       </body>
     </html>
   );

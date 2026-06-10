@@ -2,38 +2,48 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { name: 'Home', href: '/' },
-  { name: 'Visuals', href: '/visuals' },
-  { name: 'Poems', href: '/poems' },
-  { name: 'Hero Kaun', href: '/hero-kaun' },
-];
+  { name: 'Falling Trees', href: '/FallingTrees' },
+  { name: 'Phir Bhi', href: '/PhirBhi' },
+  { name: 'Hero Kaun', href: '/HeroKaun' },
+] as const;
+
+function isActive(pathname: string, href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <div className="sticky top-0 left-0 right-0 z-40 flex justify-center px-4 pointer-events-none">
-      <nav className="pointer-events-auto flex items-center gap-8 md:gap-12 px-8 md:px-12 py-6 border-b border-white/5 bg-black/20 backdrop-blur-sm">
+    <nav
+      aria-label="Main navigation"
+      className="fixed top-0 left-0 right-0 z-[100] h-24 flex justify-center items-center px-4 pointer-events-none"
+    >
+      <div className="flex items-center justify-center gap-0 px-2 h-14 border border-white/10 bg-black/90 rounded-full shadow-2xl pointer-events-auto">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const active = isActive(pathname, item.href);
+
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "relative text-[10px] md:text-xs uppercase tracking-[0.3em] transition-colors duration-500",
-                isActive ? "text-white font-medium" : "text-text-muted hover:text-white"
+                'h-full flex items-center px-4 md:px-8 text-[10px] md:text-xs uppercase tracking-[0.2em] rounded-full cursor-pointer touch-manipulation select-none',
+                active
+                  ? 'text-white font-medium bg-white/10'
+                  : 'text-text-muted hover:text-white hover:bg-white/5'
               )}
             >
               {item.name}
             </Link>
           );
         })}
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 }

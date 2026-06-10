@@ -15,24 +15,16 @@ export default function JournalReader({ entry, onClose }: JournalReaderProps) {
   const [mediaErrors, setMediaErrors] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (entry) {
-      window.history.pushState(null, '', `/hero-kaun/${entry.slug}`);
-      document.body.style.overflow = 'hidden';
-      modalRef.current?.focus();
-      setMediaErrors({}); // Reset errors
-    } else {
-      window.history.pushState(null, '', '/hero-kaun');
-      document.body.style.overflow = 'auto';
-    }
+    if (!entry) return;
 
-    const handlePopState = () => onClose();
+    document.body.style.overflow = 'hidden';
+    modalRef.current?.focus();
+    setMediaErrors({});
+
     const handleEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    
-    window.addEventListener('popstate', handlePopState);
     window.addEventListener('keydown', handleEsc);
-    
+
     return () => {
-      window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = 'auto';
     };
@@ -63,20 +55,20 @@ export default function JournalReader({ entry, onClose }: JournalReaderProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-4xl h-full max-h-[90vh] bg-black border border-white/10 rounded-sm overflow-hidden flex flex-col font-mono"
+            className="relative w-full max-w-4xl h-full max-h-[90vh] bg-black/95 backdrop-blur-3xl border border-white/10 rounded-sm overflow-hidden flex flex-col font-mono"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Terminal Header */}
-            <div className="flex items-center justify-between px-10 py-6 border-b border-white/10 bg-white/[0.02]">
+            <div className="flex items-center justify-between px-6 md:px-10 py-4 md:py-6 border-b border-white/10 bg-white/[0.02]">
               <div className="flex items-center gap-4">
                 <span className="text-xs text-text-muted uppercase tracking-[0.4em]">Archive_Access</span>
               </div>
               <button 
                 onClick={onClose}
-                className="text-text-muted hover:text-white transition-colors p-2 bg-white/5 rounded-full"
+                className="text-text-muted hover:text-white transition-colors p-4 md:p-6 bg-white/5 hover:bg-white/10 rounded-full group"
                 aria-label="Close"
               >
-                <X size={18} />
+                <X size={20} className="group-hover:scale-110 transition-transform" />
               </button>
             </div>
 

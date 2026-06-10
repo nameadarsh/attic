@@ -14,23 +14,15 @@ export default function PoemReader({ poem, onClose }: PoemReaderProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (poem) {
-      window.history.pushState(null, '', `/poems/${poem.slug}`);
-      document.body.style.overflow = 'hidden';
-      modalRef.current?.focus();
-    } else {
-      window.history.pushState(null, '', '/poems');
-      document.body.style.overflow = 'auto';
-    }
+    if (!poem) return;
 
-    const handlePopState = () => onClose();
+    document.body.style.overflow = 'hidden';
+    modalRef.current?.focus();
+
     const handleEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    
-    window.addEventListener('popstate', handlePopState);
     window.addEventListener('keydown', handleEsc);
-    
+
     return () => {
-      window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = 'auto';
     };
@@ -48,7 +40,7 @@ export default function PoemReader({ poem, onClose }: PoemReaderProps) {
         onClick={(e) => e.target === e.currentTarget && onClose()}
         role="dialog"
         aria-modal="true"
-        aria-label={`Poem reader: ${poem.title}`}
+        aria-label={`Phir Bhi reader: ${poem.title}`}
         tabIndex={-1}
         ref={modalRef}
       >
@@ -57,15 +49,16 @@ export default function PoemReader({ poem, onClose }: PoemReaderProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-2xl max-h-[85vh] bg-black/80 backdrop-blur-2xl border border-white/10 p-12 md:p-20 overflow-y-auto rounded-sm shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+             className="relative w-full max-w-2xl max-h-[85vh] bg-black/90 backdrop-blur-3xl border border-white/10 p-12 md:p-24 overflow-y-auto rounded-sm shadow-2xl"
+             onClick={(e) => e.stopPropagation()}
+           >
             {/* Close Button */}
             <button 
               onClick={onClose}
-              className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors p-2 bg-white/5 rounded-full"
+              className="absolute top-4 right-4 md:top-8 md:right-8 text-white/40 hover:text-white transition-colors p-6 bg-white/5 hover:bg-white/10 rounded-full group"
+              aria-label="Close"
             >
-              <X size={20} />
+              <X size={24} className="group-hover:scale-110 transition-transform" />
             </button>
 
             {/* Poem Content */}

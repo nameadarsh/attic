@@ -36,7 +36,7 @@ npm start
 
 The project is entirely content-driven from repository files. You can use either `.md` or `.txt` formats.
 
-### 1. Visuals (Images & Videos)
+### 1. Falling Trees (Images & Videos)
 - **Step 1:** Drop your media file (`.jpg`, `.png`, `.webp`, `.mp4`) into the `public/media/` directory.
 - **Step 2:** Start the dev server. A metadata file with the same name will be automatically created in `content/works/`.
 - **Step 3:** Edit the file in `content/works/` to add a description and set `Published: 1`.
@@ -50,7 +50,7 @@ Highlight: 0
 The description of the moment goes here.
 ```
 
-### 2. Poems
+### 2. Phir Bhi (Poems)
 - **Step 1:** Create a new file in `content/poems/`.
 - **Step 2:** Use the following format:
 
