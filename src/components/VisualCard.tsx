@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { VisualMetadata } from '@/types';
+import { getOptimizedMediaUrl, getMediaUrl } from '@/lib/media';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
@@ -60,13 +61,13 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
             visual.rotation === 270 && "-rotate-90 scale-[1.25]"
           )}
         >
-          {isInView && <source src={`/media/${visual.filename}`} type="video/mp4" />}
+          {isInView && <source src={getMediaUrl(visual.filename)} type="video/mp4" />}
         </video>
       ) : (
         <div className="relative w-full h-auto overflow-hidden block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/_next/image?url=${encodeURIComponent(`/media/${visual.filename}`)}&w=1080&q=50`}
+            src={getOptimizedMediaUrl(visual.filename, 1080, 50)}
             alt={visual.title}
             onError={() => setHasError(true)}
             className={cn(

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn, ZoomOut, Info, Share2, Star } from 'lucide-react';
 import { VisualMetadata } from '@/types';
+import { getMediaUrl } from '@/lib/media';
 import { cn } from '@/lib/utils';
 
 interface VisualViewerProps {
@@ -116,7 +117,7 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
             >
               {visual.type === 'video' ? (
                 <video 
-                  src={`/media/${visual.filename}`} 
+                  src={getMediaUrl(visual.filename)} 
                   controls 
                   autoPlay 
                   loop 
@@ -132,7 +133,7 @@ export default function VisualViewer({ visual, onClose }: VisualViewerProps) {
                 <div className="relative max-w-full max-h-[85vh]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
-                    src={`/media/${visual.filename}`} 
+                    src={getMediaUrl(visual.filename)} 
                     alt={visual.title}
                     onError={() => setHasError(true)}
                     className={cn(

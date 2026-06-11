@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { VisualMetadata, PoemMetadata, JournalMetadata } from '@/types';
+import { sanitizeMediaFilename } from './media';
 
 const CONTENT_PATH = path.join(process.cwd(), 'content');
 const MEDIA_PATH = path.join(process.cwd(), 'public', 'media');
@@ -111,7 +112,7 @@ export function getAllVisuals(): VisualMetadata[] {
       highlight: data.highlight ?? false,
       slug: slugify(data.title || baseName),
       description: content,
-      filename: mediaFile,
+      filename: sanitizeMediaFilename(mediaFile),
       type: type as 'image' | 'video',
       rotation: data.rotation ?? 0
     } as VisualMetadata;

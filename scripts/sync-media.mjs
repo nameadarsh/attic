@@ -9,6 +9,23 @@ const JOURNAL_DEST = path.join(ROOT_DIR, 'public', 'journal_media');
 
 const MEDIA_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.mp4', '.gif'];
 
+function sanitizeMediaFilename(filename) {
+  const parts = filename.split('.');
+  if (parts.length < 2) return filename.toLowerCase();
+  
+  const ext = parts.pop().toLowerCase();
+  const name = parts.join('.');
+  
+  const sanitizedName = name
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')      // Replace spaces with -
+    .replace(/[^\w-]+/g, '')   // Remove all non-word chars
+    .replace(/--+/g, '-');     // Replace multiple - with single -
+    
+  return `${sanitizedName}.${ext}`;
+}
+
 function syncDirectory(srcDir, destDir) {
   if (!fs.existsSync(srcDir)) {
     console.log(`Source directory not found: ${srcDir}`);
@@ -33,7 +50,9 @@ function syncDirectory(srcDir, destDir) {
     const ext = path.extname(file).toLowerCase();
     if (MEDIA_EXTS.includes(ext)) {
       const srcPath = path.join(srcDir, file);
-      const destPath = path.join(destDir, file);
+      // Aggressively sanitize filename before saving to public/ directory
+      const safeFilename = sanitizeMediaFilename(file);
+      const destPath = path.join(destDir, safeFilename);
       fs.copyFileSync(srcPath, destPath);
       syncedCount++;
     }
