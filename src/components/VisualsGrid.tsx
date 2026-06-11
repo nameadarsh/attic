@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import VisualCard from '@/components/VisualCard';
 import VisualViewer from '@/components/VisualViewer';
 import { VisualMetadata } from '@/types';
+import Masonry from 'react-masonry-css';
 
 interface VisualsGridProps {
   visuals: VisualMetadata[];
@@ -23,18 +24,30 @@ export default function VisualsGrid({ visuals }: VisualsGridProps) {
     router.push('/FallingTrees');
   };
 
+  const breakpointColumnsObj = {
+    default: 4,
+    1280: 3,
+    1024: 3,
+    768: 2,
+    640: 1
+  };
+
   return (
     <>
-      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 md:gap-10 lg:gap-12">
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
         {visuals.map((visual) => (
-          <div key={visual.slug} className="break-inside-avoid mb-6 md:mb-10 lg:mb-12">
+          <div key={visual.slug} className="mb-6 md:mb-10 lg:mb-12">
             <VisualCard
               visual={visual}
               onClick={() => openVisual(visual)}
             />
           </div>
         ))}
-      </div>
+      </Masonry>
 
       {visuals.length === 0 && (
         <div className="py-32 text-center text-white/20 font-light italic">

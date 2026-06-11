@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { VisualMetadata } from '@/types';
 import Image from 'next/image';
@@ -15,6 +15,9 @@ interface VisualCardProps {
 export default function VisualCard({ visual, onClick }: VisualCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(cardRef, { once: true, margin: "200px" });
 
   const [hasError, setHasError] = useState(false);
 
@@ -34,6 +37,7 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
       tabIndex={0}
       role="button"
       aria-label={`View ${visual.title}`}
+      ref={cardRef}
       className="relative bg-neutral-900 overflow-hidden cursor-pointer group rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-accent-warm/50"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -43,11 +47,11 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
       {visual.type === 'video' ? (
         <video
           ref={videoRef}
-          src={`/media/${visual.filename}`}
           muted
           loop
-          autoPlay
+          autoPlay={isInView}
           playsInline
+          preload="none"
           onError={() => setHasError(true)}
           className={cn(
             "w-full h-auto object-cover transition-opacity duration-700 block",
@@ -55,15 +59,15 @@ export default function VisualCard({ visual, onClick }: VisualCardProps) {
             visual.rotation === 180 && "rotate-180",
             visual.rotation === 270 && "-rotate-90 scale-[1.25]"
           )}
-        />
+        >
+          {isInView && <source src={`/media/${visual.filename}`} type="video/mp4" />}
+        </video>
       ) : (
         <div className="relative w-full h-auto overflow-hidden block">
-          <Image
-            src={`/media/${visual.filename}`}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/_next/image?url=${encodeURIComponent(`/media/${visual.filename}`)}&w=1080&q=50`}
             alt={visual.title}
-            width={0}
-            height={0}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             onError={() => setHasError(true)}
             className={cn(
               "w-full h-auto transition-opacity duration-1000",

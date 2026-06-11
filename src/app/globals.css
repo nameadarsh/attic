@@ -65,3 +65,24 @@ body {
     scrollbar-width: none;
   }
 }
+
+/* React Masonry CSS */
+.my-masonry-grid {
+  display: flex;
+  margin-left: -24px; /* gap md/lg */
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 24px; /* gap md/lg */
+  background-clip: padding-box;
+}
+
+@media (min-width: 768px) {
+  .my-masonry-grid { margin-left: -40px; }
+  .my-masonry-grid_column { padding-left: 40px; }
+}
+
+@media (min-width: 1024px) {
+  .my-masonry-grid { margin-left: -48px; }
+  .my-masonry-grid_column { padding-left: 48px; }
+}
