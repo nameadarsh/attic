@@ -37,3 +37,4 @@ next-env.d.ts
 !/public/media/.gitkeep
 /public/journal_media/*
 !/public/journal_media/.gitkeep
+backup_media/
