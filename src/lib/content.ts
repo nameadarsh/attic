@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { VisualMetadata, PoemMetadata, JournalMetadata } from '@/types';
 import { sanitizeMediaFilename } from './media';
+import { getImages, getVideos } from './storage';
 
 const CONTENT_PATH = path.join(process.cwd(), 'content');
 const MEDIA_PATH = path.join(process.cwd(), 'public', 'media');
@@ -79,9 +80,9 @@ function parseCustomFormat(fileContent: string) {
 
 
 /**
- * Gets all visuals (images/videos) with their metadata
+ * Gets all visuals (images/videos) with their metadata from R2
  */
-export function getAllVisuals(): VisualMetadata[] {
+export async function getAllVisuals(): Promise<VisualMetadata[]> {
   const descriptionsDir = path.join(WORKS_CONTENT_PATH, 'descriptions');
   const visualsDir = path.join(WORKS_CONTENT_PATH, 'visuals');
 
@@ -89,22 +90,31 @@ export function getAllVisuals(): VisualMetadata[] {
 
   const files = fs.readdirSync(descriptionsDir).filter(f => !f.startsWith('_') && (f.endsWith('.md') || f.endsWith('.txt')));
   
+  const r2Images = await getImages();
+  const r2Videos = await getVideos();
+  const allMediaKeys = [...r2Images, ...r2Videos];
+
   const visuals = files.map(file => {
     const contentData = getFileContent('works/descriptions', file);
     if (!contentData) return null;
     
     const { data, content } = contentData;
     const baseName = path.parse(file).name;
-    // Find corresponding media file in the visuals directory
-    const allFiles = fs.readdirSync(visualsDir);
-    const mediaFile = allFiles.find(m => 
-      path.parse(m).name === baseName && 
-      /\.(jpg|jpeg|png|webp|mp4|gif)$/i.test(m)
-    );
     
-    if (!mediaFile) return null; // Filter out if no media exists
+    // Find corresponding media file in R2
+    // Keys in R2 look like "works/visuals/safe-name.jpg"
+    // We sanitize the baseName to match against the keys
+    const sanitizedBase = sanitizeMediaFilename(baseName).split('.')[0];
+    
+    const matchedKey = allMediaKeys.find(key => {
+      const keyBase = path.parse(key).name;
+      return keyBase === sanitizedBase || keyBase === baseName.toLowerCase();
+    });
+    
+    if (!matchedKey) return null; // Filter out if no media exists
 
-    const type = mediaFile.toLowerCase().endsWith('.mp4') ? 'video' : 'image';
+    const type = matchedKey.toLowerCase().endsWith('.mp4') || matchedKey.toLowerCase().endsWith('.webm') ? 'video' : 'image';
+    const mediaFilename = path.basename(matchedKey);
 
     return {
       title: data.title || baseName,
@@ -112,7 +122,7 @@ export function getAllVisuals(): VisualMetadata[] {
       highlight: data.highlight ?? false,
       slug: slugify(data.title || baseName),
       description: content,
-      filename: sanitizeMediaFilename(mediaFile),
+      filename: mediaFilename,
       type: type as 'image' | 'video',
       rotation: data.rotation ?? 0
     } as VisualMetadata;

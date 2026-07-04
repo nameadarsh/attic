@@ -8,7 +8,7 @@ export default function VisualsDeepLinkPage() {
 import { getAllVisuals } from '@/lib/content';
 
 export async function generateStaticParams() {
-  const visuals = getAllVisuals();
+  const visuals = await getAllVisuals();
   return visuals.map((visual) => ({
     slug: visual.slug,
   }));

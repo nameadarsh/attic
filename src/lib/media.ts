@@ -29,11 +29,12 @@ export function sanitizeMediaFilename(filename: string): string {
 
 /**
  * Returns the absolute unoptimized URL path for a media file.
- * Safely encodes the path for use in the browser.
+ * Routes through the server-side API proxy to keep R2 private.
  */
 export function getMediaUrl(filename: string): string {
   const safeFilename = sanitizeMediaFilename(filename);
-  return `/media/${safeFilename}`;
+  // Hide the exact R2 storage path ('works/visuals') from the frontend by routing it here
+  return `/api/media/works/visuals/${safeFilename}`;
 }
 
 /**

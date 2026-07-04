@@ -3,9 +3,8 @@ import Link from 'next/link';
 import Hero from '@/components/Hero';
 import Footer from '@/components/Footer';
 
-export default function Home() {
-  const visuals = getAllVisuals();
-
+export default async function Home() {
+  const visuals = await getAllVisuals();
   const poems = getAllPoems();
   const journalEntries = getAllJournalEntries();
 

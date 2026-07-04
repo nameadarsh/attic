@@ -2,8 +2,8 @@ import { getAllVisuals } from '@/lib/content';
 import VisualsGrid from '@/components/VisualsGrid';
 import Footer from '@/components/Footer';
 
-export default function VisualsPage() {
-  const visuals = getAllVisuals();
+export default async function FallingTrees() {
+  const visuals = await getAllVisuals();
 
 
   return (
