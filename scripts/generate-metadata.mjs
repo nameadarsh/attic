@@ -32,7 +32,7 @@ function generateMissingMetadata() {
       
       if (!fs.existsSync(mdPath) && !fs.existsSync(txtPath)) {
         console.log(`Generating metadata for works: ${file}`);
-        const content = `Title: ${baseName}\nPublished: 0\nHighlight: 0\nRotation: 0\n\n[Description for ${baseName}]`;
+        const content = `Title: ${baseName}\nPublished: 1\nHighlight: 0\nRotation: 0\n\n[Description for ${baseName}]`;
         fs.writeFileSync(mdPath, content, 'utf8');
         worksGenerated++;
       }
@@ -54,7 +54,7 @@ function generateMissingMetadata() {
         
         if (!fs.existsSync(mdPath) && !fs.existsSync(txtPath)) {
           console.log(`Generating metadata for journal: ${file}`);
-          const content = `Title: ${baseName}\nDate: ${today}\nPublished: 0\nHighlight: 0\nMedia: ${file}\n\n[Journal entry for ${baseName}]`;
+          const content = `Title: ${baseName}\nDate: ${today}\nPublished: 1\nHighlight: 0\nMedia: ${file}\n\n[Journal entry for ${baseName}]`;
           fs.writeFileSync(mdPath, content, 'utf8');
           journalGenerated++;
         }

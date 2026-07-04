@@ -38,3 +38,8 @@ next-env.d.ts
 /public/journal_media/*
 !/public/journal_media/.gitkeep
 backup_media/
+
+# Cloudflare R2 Migration
+# Media is now hosted on R2. The local visuals folder is just a staging area for uploads.
+/content/works/visuals/*
+!/content/works/visuals/.gitkeep

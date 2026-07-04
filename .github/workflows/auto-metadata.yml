@@ -17,45 +17,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Generate Missing Works Metadata
-        run: |
-          mkdir -p content/works/visuals content/works/descriptions
-          cd content/works/visuals
-          for f in *.{jpg,jpeg,png,webp,mp4,gif}; do
-            [ -e "$f" ] || continue
-            base="${f%.*}"
-            if [ ! -f "../descriptions/$base.md" ] && [ ! -f "../descriptions/$base.txt" ]; then
-              echo "Generating metadata for works: $f"
-              cat <<EOF > "../descriptions/$base.md"
-Title: $base
-Published: 0
-Highlight: 0
-Rotation: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-[Description for $base]
-EOF
-            fi
-          done
-
-      - name: Generate Missing Journal Metadata
-        run: |
-          cd content/journal
-          for f in *.{jpg,jpeg,png,webp,mp4}; do
-            [ -e "$f" ] || continue
-            base="${f%.*}"
-            if [ ! -f "$base.md" ] && [ ! -f "$base.txt" ]; then
-              echo "Generating metadata for journal: $f"
-              cat <<EOF > "$base.md"
-Title: $base
-Date: $(date +%Y-%m-%d)
-Published: 0
-Highlight: 0
-Media: $f
-
-[Journal entry for $base]
-EOF
-            fi
-          done
+      - name: Generate Missing Metadata
+        run: node scripts/generate-metadata.mjs
 
       - name: Commit and Push
         run: |

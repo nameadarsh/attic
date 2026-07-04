@@ -39,8 +39,8 @@ All content is fully co-located. The source of truth for all memories is the `co
 ```text
 ├── content/              # The Attic
 │   ├── works/            # Photographs and Videos (Falling Trees)
-│   │   ├── visuals/      # Only media files (.jpg, .mp4)
-│   │   └── descriptions/ # Only metadata files (.md)
+│   │   ├── visuals/      # (Local Staging) Upload via npm run r2:upload
+│   │   └── descriptions/ # Only metadata files (.md). Stored in Git.
 │   ├── poems/            # Poems (Phir Bhi)
 │   └── journal/          # Journal Entries (Hero Kaun)
 ```
@@ -51,11 +51,12 @@ The easiest way to add content is to use the `_skeleton.md` file found inside ea
 
 ### Adding A Photo or Video (Falling Trees)
 
-1. Upload your media file (e.g., `my-photo.jpg`) to the `content/works/visuals/` folder.
-2. Metadata appears automatically. (If adding locally, run `npm run generate`. If uploading via GitHub web, it will be generated within 30 seconds).
-3. Open the newly generated `my-photo.md` inside `content/works/descriptions/` and edit the metadata (set `Published: 1`, add description).
-4. Commit your changes.
-5. Content appears on the site!
+1. **Local Uploads**: Drop your media into `content/works/visuals/`. 
+2. **Cloudflare R2 Sync**: Run `npm run r2:upload`. This directly pushes your media to the private Cloudflare R2 bucket without bloating the Git repository.
+3. **Metadata Generation**: Run `npm run generate` locally. This will automatically scan R2/Local folders and generate dummy `.md` descriptions in `content/works/descriptions/`. By default, they are set to `Published: 1`.
+4. Edit the `.md` metadata file if you want to add a custom description or change rotation.
+5. **Commit**: Only commit the `.md` file to Git! The actual images are safely in R2.
+6. **Deploy**: Push to main. Vercel will build the site, read your `.md` files, and securely proxy the media from R2.
 
 ### Adding A Poem (Phir Bhi)
 
@@ -81,12 +82,9 @@ The easiest way to add content is to use the `_skeleton.md` file found inside ea
 
 ## Automatic Metadata Generation (GitHub Workflow)
 
-If you are uploading from a mobile device or quickly adding a photo directly through the GitHub Web UI without creating the `.md` file, the attic will help you:
+*Note: The automatic GitHub Web UI workflow is currently transitioning to the R2 architecture. For now, it's recommended to upload Visuals locally via `npm run r2:upload`.*
 
-1. Upload your photo (e.g., `sunset.jpg`) to `content/works/visuals/` and commit.
-2. Within 30 seconds, a GitHub Action will run in the background.
-3. It will automatically generate `sunset.md` inside `content/works/descriptions/` with default metadata (`Published: 0`) and commit it to your repository.
-4. You can then edit `sunset.md` in the GitHub UI, set `Published: 1`, write your description, and save.
+If you add text content (Poems, Journals) directly through the GitHub Web UI, the GitHub Action will automatically run and commit formatting checks.
 
 *No manual alignment is required.*
 
@@ -104,7 +102,7 @@ If you are uploading from a mobile device or quickly adding a photo directly thr
 The project is deployed via Vercel. 
 Any push to the main branch on GitHub will automatically trigger a production build and deploy to `attic.adarshbajpai.com`. 
 
-During the build step, the system securely synchronizes the co-located media to the static folder. No runtime API calls or backend infrastructure is used.
+**Cloudflare R2 Integration**: Media assets are stored privately in Cloudflare R2. Vercel securely proxies these assets via `/api/media/[slug]` to prevent exposing your R2 credentials or raw bucket URLs. Ensure your Vercel project has the `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, and `R2_ENDPOINT` environment variables.
 
 ## Troubleshooting & Common Mistakes
 
