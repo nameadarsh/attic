@@ -2,8 +2,8 @@ import { getAllJournalEntries } from '@/lib/content';
 import JournalList from '@/components/JournalList';
 import Footer from '@/components/Footer';
 
-export default function HeroKaunPage() {
-  const entries = getAllJournalEntries();
+export default async function HeroKaunPage() {
+  const entries = await getAllJournalEntries();
 
 
   return (

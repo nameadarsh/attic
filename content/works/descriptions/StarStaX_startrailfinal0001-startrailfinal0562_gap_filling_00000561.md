@@ -1,6 +1,0 @@
-Title: StarStaX_startrailfinal0001-startrailfinal0562_gap_filling_00000561
-Published: 1
-Highlight: 0
-Rotation: 0
-
-[Description for StarStaX_startrailfinal0001-startrailfinal0562_gap_filling_00000561]

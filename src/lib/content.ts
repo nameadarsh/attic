@@ -1,13 +1,7 @@
-import fs from 'fs';
-import path from 'path';
 import matter from 'gray-matter';
 import { VisualMetadata, PoemMetadata, JournalMetadata } from '@/types';
 import { sanitizeMediaFilename } from './media';
-import { getImages, getVideos } from './storage';
-
-const CONTENT_PATH = path.join(process.cwd(), 'content');
-const MEDIA_PATH = path.join(process.cwd(), 'public', 'media');
-const WORKS_CONTENT_PATH = path.join(CONTENT_PATH, 'works');
+import { listObjects, getObjectString, getImages, getVideos } from './storage';
 
 /**
  * Slugifies a string for URL use
@@ -23,13 +17,9 @@ function slugify(text: string) {
 }
 
 /**
- * Parses content from a file, supporting both YAML frontmatter and custom "Key: Value" format
+ * Parses content from a string, supporting both YAML frontmatter and custom "Key: Value" format
  */
-export function getFileContent(subDir: string, fileName: string) {
-  const filePath = path.join(CONTENT_PATH, subDir, fileName);
-  if (!fs.existsSync(filePath)) return null;
-  
-  const fileContent = fs.readFileSync(filePath, 'utf8');
+export function parseContentString(fileContent: string) {
   const { data, content } = matter(fileContent);
   
   // If gray-matter didn't find frontmatter, use custom parser
@@ -77,58 +67,59 @@ function parseCustomFormat(fileContent: string) {
   return { data, content };
 }
 
-
-
 /**
  * Gets all visuals (images/videos) with their metadata from R2
  */
 export async function getAllVisuals(): Promise<VisualMetadata[]> {
-  const descriptionsDir = path.join(WORKS_CONTENT_PATH, 'descriptions');
-  const visualsDir = path.join(WORKS_CONTENT_PATH, 'visuals');
+  try {
+    const descriptionKeys = await listObjects('works/descriptions/');
+    const r2Images = await getImages();
+    const r2Videos = await getVideos();
+    const allMediaKeys = [...r2Images, ...r2Videos];
 
-  if (!fs.existsSync(descriptionsDir) || !fs.existsSync(visualsDir)) return [];
+    const visuals: VisualMetadata[] = [];
 
-  const files = fs.readdirSync(descriptionsDir).filter(f => !f.startsWith('_') && (f.endsWith('.md') || f.endsWith('.txt')));
-  
-  const r2Images = await getImages();
-  const r2Videos = await getVideos();
-  const allMediaKeys = [...r2Images, ...r2Videos];
+    for (const key of descriptionKeys) {
+      if (!key.endsWith('.md') && !key.endsWith('.txt')) continue;
+      if (key.includes('/_')) continue; // Skip templates/skeletons
 
-  const visuals = files.map(file => {
-    const contentData = getFileContent('works/descriptions', file);
-    if (!contentData) return null;
-    
-    const { data, content } = contentData;
-    const baseName = path.parse(file).name;
-    
-    // Find corresponding media file in R2
-    // Keys in R2 look like "works/visuals/safe-name.jpg"
-    // We sanitize the baseName to match against the keys
-    const sanitizedBase = sanitizeMediaFilename(baseName).split('.')[0];
-    
-    const matchedKey = allMediaKeys.find(key => {
-      const keyBase = path.parse(key).name;
-      return keyBase === sanitizedBase || keyBase === baseName.toLowerCase();
-    });
-    
-    if (!matchedKey) return null; // Filter out if no media exists
+      const fileContent = await getObjectString(key);
+      if (!fileContent) continue;
 
-    const type = matchedKey.toLowerCase().endsWith('.mp4') || matchedKey.toLowerCase().endsWith('.webm') ? 'video' : 'image';
-    const mediaFilename = path.basename(matchedKey);
+      const { data, content } = parseContentString(fileContent);
+      
+      // key is something like "works/descriptions/my-photo.md"
+      const baseName = key.split('/').pop()?.replace(/\.(md|txt)$/, '') || '';
+      
+      const sanitizedBase = sanitizeMediaFilename(baseName).split('.')[0];
+      
+      const matchedKey = allMediaKeys.find(mediaKey => {
+        const keyBase = mediaKey.split('/').pop()?.split('.')[0] || '';
+        return keyBase === sanitizedBase || keyBase === baseName.toLowerCase();
+      });
+      
+      if (!matchedKey) continue; // Filter out if no media exists
 
-    return {
-      title: data.title || baseName,
-      published: data.published ?? false,
-      highlight: data.highlight ?? false,
-      slug: slugify(data.title || baseName),
-      description: content,
-      filename: mediaFilename,
-      type: type as 'image' | 'video',
-      rotation: data.rotation ?? 0
-    } as VisualMetadata;
-  }).filter((v): v is VisualMetadata => v !== null && v.published);
+      const type = matchedKey.toLowerCase().endsWith('.mp4') || matchedKey.toLowerCase().endsWith('.webm') ? 'video' : 'image';
+      const mediaFilename = matchedKey.split('/').pop() || '';
 
-  return ensureUniqueSlugs(visuals);
+      visuals.push({
+        title: data.title || baseName,
+        published: data.published ?? false,
+        highlight: data.highlight ?? false,
+        slug: slugify(data.title || baseName),
+        description: content,
+        filename: mediaFilename,
+        type: type as 'image' | 'video',
+        rotation: data.rotation ?? 0
+      });
+    }
+
+    return ensureUniqueSlugs(visuals.filter(v => v.published));
+  } catch (error) {
+    console.error('Failed to fetch visuals from R2:', error);
+    return [];
+  }
 }
 
 function ensureUniqueSlugs<T extends { slug: string }>(items: T[]): T[] {
@@ -145,73 +136,72 @@ function ensureUniqueSlugs<T extends { slug: string }>(items: T[]): T[] {
 }
 
 /**
- * Gets all poems
+ * Gets all poems from R2
  */
-export function getAllPoems(): PoemMetadata[] {
-  
-  const poemDir = path.join(CONTENT_PATH, 'poems');
-  if (!fs.existsSync(poemDir)) return [];
-  
-  let files: string[] = [];
+export async function getAllPoems(): Promise<PoemMetadata[]> {
   try {
-    files = fs.readdirSync(poemDir).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
-  } catch (e) {
-    console.error('Failed to read poems directory', e);
+    const keys = await listObjects('poems/');
+    const poems: PoemMetadata[] = [];
+
+    for (const key of keys) {
+      if (!key.endsWith('.md') && !key.endsWith('.txt')) continue;
+      if (key.includes('/_')) continue; // Skip templates/skeletons
+
+      const fileContent = await getObjectString(key);
+      if (!fileContent) continue;
+
+      const { data, content } = parseContentString(fileContent);
+      const baseName = key.split('/').pop()?.replace(/\.(md|txt)$/, '') || '';
+
+      poems.push({
+        title: data.title || baseName,
+        published: data.published ?? false,
+        highlight: data.highlight ?? false,
+        slug: slugify(data.title || baseName),
+        content: content
+      });
+    }
+
+    return ensureUniqueSlugs(poems.filter(p => p.published));
+  } catch (error) {
+    console.error('Failed to fetch poems from R2:', error);
     return [];
   }
-  
-  const poems = files.map(file => {
-    const contentData = getFileContent('poems', file);
-    if (!contentData) return null;
-    
-    const { data, content } = contentData;
-    const baseName = path.parse(file).name;
-
-    return {
-      title: data.title || baseName,
-      published: data.published ?? false,
-      highlight: data.highlight ?? false,
-      slug: slugify(data.title || baseName),
-      content: content
-    } as PoemMetadata;
-  }).filter((p): p is PoemMetadata => p !== null && p.published);
-
-  return ensureUniqueSlugs(poems);
 }
 
 /**
- * Gets all journal entries
+ * Gets all journal entries from R2
  */
-export function getAllJournalEntries(): JournalMetadata[] {
-  
-  const journalDir = path.join(CONTENT_PATH, 'journal');
-  if (!fs.existsSync(journalDir)) return [];
-  
-  let files: string[] = [];
+export async function getAllJournalEntries(): Promise<JournalMetadata[]> {
   try {
-    files = fs.readdirSync(journalDir).filter(f => f.endsWith('.md') || f.endsWith('.txt'));
-  } catch (e) {
-    console.error('Failed to read journal directory', e);
+    const keys = await listObjects('journal/');
+    const entries: JournalMetadata[] = [];
+
+    for (const key of keys) {
+      // Allow only metadata files, skip actual media in the root journal folder
+      if (!key.endsWith('.md') && !key.endsWith('.txt')) continue;
+      if (key.includes('/_')) continue; // Skip templates/skeletons
+
+      const fileContent = await getObjectString(key);
+      if (!fileContent) continue;
+
+      const { data, content } = parseContentString(fileContent);
+      const baseName = key.split('/').pop()?.replace(/\.(md|txt)$/, '') || '';
+
+      entries.push({
+        title: data.title || baseName,
+        date: data.date || '',
+        published: data.published ?? false,
+        highlight: data.highlight ?? false,
+        slug: slugify(data.title || baseName),
+        media: data.media || [],
+        content: content
+      });
+    }
+
+    return ensureUniqueSlugs(entries.filter(j => j.published));
+  } catch (error) {
+    console.error('Failed to fetch journal entries from R2:', error);
     return [];
   }
-  
-  const entries = files.map(file => {
-    const contentData = getFileContent('journal', file);
-    if (!contentData) return null;
-    
-    const { data, content } = contentData;
-    const baseName = path.parse(file).name;
-
-    return {
-      title: data.title || baseName,
-      date: data.date || '',
-      published: data.published ?? false,
-      highlight: data.highlight ?? false,
-      slug: slugify(data.title || baseName),
-      media: data.media || [],
-      content: content
-    } as JournalMetadata;
-  }).filter((j): j is JournalMetadata => j !== null && j.published);
-
-  return ensureUniqueSlugs(entries);
 }

@@ -2,8 +2,8 @@ import { getAllPoems } from '@/lib/content';
 import PoemsList from '@/components/PoemsList';
 import Footer from '@/components/Footer';
 
-export default function PoemsPage() {
-  const poems = getAllPoems();
+export default async function PoemsPage() {
+  const poems = await getAllPoems();
 
 
   return (

@@ -6,8 +6,8 @@ import Footer from '@/components/Footer';
 
 export default async function Home() {
   const visuals = await getAllVisuals();
-  const poems = getAllPoems();
-  const journalEntries = getAllJournalEntries();
+  const poems = await getAllPoems();
+  const journalEntries = await getAllJournalEntries();
 
   return (
     <div className="flex flex-col min-h-screen">

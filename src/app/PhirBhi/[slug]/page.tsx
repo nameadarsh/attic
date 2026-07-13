@@ -7,7 +7,7 @@ export default function PoemsDeepLinkPage() {
 import { getAllPoems } from '@/lib/content';
 
 export async function generateStaticParams() {
-  const poems = getAllPoems();
+  const poems = await getAllPoems();
   return poems.map((poem) => ({
     slug: poem.slug,
   }));

@@ -7,7 +7,7 @@ export default function HeroKaunDeepLinkPage() {
 import { getAllJournalEntries } from '@/lib/content';
 
 export async function generateStaticParams() {
-  const entries = getAllJournalEntries();
+  const entries = await getAllJournalEntries();
   return entries.map((entry) => ({
     slug: entry.slug,
   }));
