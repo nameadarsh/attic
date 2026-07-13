@@ -79,39 +79,48 @@ export async function getAllVisuals(): Promise<VisualMetadata[]> {
 
     const visuals: VisualMetadata[] = [];
 
-    for (const key of descriptionKeys) {
-      if (!key.endsWith('.md') && !key.endsWith('.txt')) continue;
-      if (key.includes('/_')) continue; // Skip templates/skeletons
+    for (const mediaKey of allMediaKeys) {
+      if (mediaKey.includes('/_')) continue; // Skip templates/skeletons
 
-      const fileContent = await getObjectString(key);
-      if (!fileContent) continue;
-
-      const { data, content } = parseContentString(fileContent);
+      const mediaFilename = mediaKey.split('/').pop() || '';
+      const baseName = mediaFilename.split('.')[0] || '';
+      const sanitizedBase = sanitizeMediaFilename(baseName);
       
-      // key is something like "works/descriptions/my-photo.md"
-      const baseName = key.split('/').pop()?.replace(/\.(md|txt)$/, '') || '';
+      const type = mediaKey.toLowerCase().endsWith('.mp4') || mediaKey.toLowerCase().endsWith('.webm') ? 'video' : 'image';
       
-      const sanitizedBase = sanitizeMediaFilename(baseName).split('.')[0];
-      
-      const matchedKey = allMediaKeys.find(mediaKey => {
-        const keyBase = mediaKey.split('/').pop()?.split('.')[0] || '';
+      // Look for a corresponding description
+      const descKey = descriptionKeys.find(key => {
+        const keyBase = key.split('/').pop()?.split('.')[0] || '';
         return keyBase === sanitizedBase || keyBase === baseName.toLowerCase();
       });
-      
-      if (!matchedKey) continue; // Filter out if no media exists
 
-      const type = matchedKey.toLowerCase().endsWith('.mp4') || matchedKey.toLowerCase().endsWith('.webm') ? 'video' : 'image';
-      const mediaFilename = matchedKey.split('/').pop() || '';
+      let title = baseName;
+      let description = '';
+      let published = true; // Default to true if no description file exists
+      let highlight = false;
+      let rotation = 0;
+
+      if (descKey) {
+        const fileContent = await getObjectString(descKey);
+        if (fileContent) {
+          const { data, content } = parseContentString(fileContent);
+          title = data.title || baseName;
+          published = data.published ?? false;
+          highlight = data.highlight ?? false;
+          description = content;
+          rotation = data.rotation ?? 0;
+        }
+      }
 
       visuals.push({
-        title: data.title || baseName,
-        published: data.published ?? false,
-        highlight: data.highlight ?? false,
-        slug: slugify(data.title || baseName),
-        description: content,
+        title,
+        published,
+        highlight,
+        slug: slugify(title),
+        description,
         filename: mediaFilename,
         type: type as 'image' | 'video',
-        rotation: data.rotation ?? 0
+        rotation
       });
     }
 
