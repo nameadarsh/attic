@@ -1,4 +1,5 @@
 import { getAllVisuals, getAllPoems, getAllJournalEntries } from '@/lib/content';
+import { getMediaUrl } from '@/lib/media';
 import Link from 'next/link';
 import Hero from '@/components/Hero';
 import Footer from '@/components/Footer';
@@ -20,7 +21,7 @@ export default async function Home() {
             <div className="w-[300px] md:w-[450px] aspect-[4/5] bg-neutral-900 rounded-sm overflow-hidden flex-shrink-0 group relative">
               {item.type === 'video' ? (
                 <video 
-                  src={`/media/${item.filename}`}
+                  src={getMediaUrl(item.filename)}
                   muted
                   loop
                   playsInline
@@ -29,7 +30,7 @@ export default async function Home() {
                 />
               ) : (
                 <img 
-                  src={`/media/${item.filename}`}
+                  src={getMediaUrl(item.filename)}
                   alt={item.title}
                   className="w-full h-full object-cover"
                   style={{ transform: `rotate(${item.rotation || 0}deg)` }}

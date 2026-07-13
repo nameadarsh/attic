@@ -10,6 +10,8 @@ interface JournalReaderProps {
   onClose: () => void;
 }
 
+import { getJournalMediaUrl } from '@/lib/media';
+
 export default function JournalReader({ entry, onClose }: JournalReaderProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [mediaErrors, setMediaErrors] = useState<Record<string, boolean>>({});
@@ -105,7 +107,7 @@ export default function JournalReader({ entry, onClose }: JournalReaderProps) {
                           <div key={i} className="bg-white/5 border border-white/10 rounded-sm overflow-hidden">
                             {isVideo ? (
                               <video 
-                                src={`/api/media/journal/${filename}`} 
+                                src={getJournalMediaUrl(filename)} 
                                 controls 
                                 onError={() => handleMediaError(filename)}
                                 className="w-full h-auto"
@@ -113,7 +115,7 @@ export default function JournalReader({ entry, onClose }: JournalReaderProps) {
                             ) : (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img 
-                                src={`/api/media/journal/${filename}`} 
+                                src={getJournalMediaUrl(filename)} 
                                 alt={`Journal media ${i}`}
                                 onError={() => handleMediaError(filename)}
                                 className="w-full h-auto object-contain"

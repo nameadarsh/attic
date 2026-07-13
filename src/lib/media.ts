@@ -29,20 +29,49 @@ export function sanitizeMediaFilename(filename: string): string {
 
 /**
  * Returns the absolute unoptimized URL path for a media file.
- * Routes through the server-side API proxy to keep R2 private.
+ * Uses the public R2 dev URL if available for speed, otherwise falls back to Vercel API proxy.
  */
 export function getMediaUrl(filename: string): string {
   const safeFilename = sanitizeMediaFilename(filename);
-  // Hide the exact R2 storage path ('works/visuals') from the frontend by routing it here
+  const r2Url = process.env.NEXT_PUBLIC_R2_URL;
+  
+  if (r2Url) {
+    // Trim trailing slash if present
+    const baseUrl = r2Url.replace(/\/$/, '');
+    return `${baseUrl}/works/visuals/${safeFilename}`;
+  }
+  
+  // Fallback to proxy
   return `/api/media/works/visuals/${safeFilename}`;
 }
 
 /**
  * Returns the Next.js optimized URL path for a media file.
- * This directly interfaces with Next.js' internal image optimization API.
+ * If using the direct R2 dev URL, we bypass Next.js image optimization 
+ * to save compute since R2 serves fast directly.
  */
 export function getOptimizedMediaUrl(filename: string, width: number = 1080, quality: number = 50): string {
   const mediaUrl = getMediaUrl(filename);
+  
+  // If we are using the direct R2 URL, skip Next.js optimization proxy as it can time out for large files
+  if (process.env.NEXT_PUBLIC_R2_URL) {
+    return mediaUrl;
+  }
+  
   // Next.js _next/image requires the target URL to be URI encoded
   return `/_next/image?url=${encodeURIComponent(mediaUrl)}&w=${width}&q=${quality}`;
+}
+
+/**
+ * Returns the URL path for a journal media file.
+ */
+export function getJournalMediaUrl(filename: string): string {
+  const r2Url = process.env.NEXT_PUBLIC_R2_URL;
+  
+  if (r2Url) {
+    const baseUrl = r2Url.replace(/\/$/, '');
+    return `${baseUrl}/journal/${filename}`;
+  }
+  
+  return `/api/media/journal/${filename}`;
 }
