@@ -105,7 +105,7 @@ export default function JournalReader({ entry, onClose }: JournalReaderProps) {
                           <div key={i} className="bg-white/5 border border-white/10 rounded-sm overflow-hidden">
                             {isVideo ? (
                               <video 
-                                src={`/journal_media/${filename}`} 
+                                src={`/api/media/journal/${filename}`} 
                                 controls 
                                 onError={() => handleMediaError(filename)}
                                 className="w-full h-auto"
@@ -113,7 +113,7 @@ export default function JournalReader({ entry, onClose }: JournalReaderProps) {
                             ) : (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img 
-                                src={`/journal_media/${filename}`} 
+                                src={`/api/media/journal/${filename}`} 
                                 alt={`Journal media ${i}`}
                                 onError={() => handleMediaError(filename)}
                                 className="w-full h-auto object-contain"

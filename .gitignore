@@ -32,14 +32,26 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# synced media (source of truth is in content/)
-/public/media/*
-!/public/media/.gitkeep
-/public/journal_media/*
-!/public/journal_media/.gitkeep
+# synced media (source of truth is in R2)
+/public/media/
+/public/journal_media/
 backup_media/
 
 # Cloudflare R2 Migration
-# Media is now hosted on R2. The local visuals folder is just a staging area for uploads.
+# Media is now hosted on R2. Local folders are just staging areas for uploads.
 /content/works/visuals/*
 !/content/works/visuals/.gitkeep
+
+# Globally ignore large media files to prevent accidentally pushing content to GitHub
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.mp4
+*.mov
+*.heic
+*.dng
+*.mp3
+*.wav
+

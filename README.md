@@ -52,7 +52,7 @@ The easiest way to add content is to use the `_skeleton.md` file found inside ea
 ### Adding A Photo or Video (Falling Trees)
 
 1. **Local Uploads**: Drop your media into `content/works/visuals/`. 
-2. **Cloudflare R2 Sync**: Run `npm run r2:upload`. This directly pushes your media to the private Cloudflare R2 bucket without bloating the Git repository.
+2. **Cloudflare R2 Sync**: Run `npm run r2:upload`. This script directly pushes your media to the private Cloudflare R2 bucket (`works/visuals/` prefix). Large media files are globally ignored by Git, so they will not bloat the repository.
 3. **Metadata Generation**: Run `npm run generate` locally. This will automatically scan R2/Local folders and generate dummy `.md` descriptions in `content/works/descriptions/`. By default, they are set to `Published: 1`.
 4. Edit the `.md` metadata file if you want to add a custom description or change rotation.
 5. **Commit**: Only commit the `.md` file to Git! The actual images are safely in R2.
@@ -71,14 +71,15 @@ The easiest way to add content is to use the `_skeleton.md` file found inside ea
 ### Adding A Journal Entry (Hero Kaun)
 
 1. Navigate to the `content/journal/` folder.
-2. Upload any media for the entry (e.g., `delhi-trip.jpg`).
-3. Duplicate `_skeleton.md` and rename it (e.g., `delhi-trip.md`).
-4. Edit `delhi-trip.md`:
+2. Upload any media for the entry (e.g., `delhi-trip.jpg`) directly into `content/journal/`.
+3. **Cloudflare R2 Sync**: Run `npm run r2:upload` to sync the media to Cloudflare R2 (`journal/` prefix). Again, media files are git-ignored locally.
+4. Duplicate `_skeleton.md` and rename it (e.g., `delhi-trip.md`).
+5. Edit `delhi-trip.md`:
    - Set `Title: Your Title`
    - Set `Published: 1`
    - Set `Media: delhi-trip.jpg`
    - Add your journal text below the metadata.
-5. Commit and push.
+6. Commit and push.
 
 ## Automatic Metadata Generation (GitHub Workflow)
 

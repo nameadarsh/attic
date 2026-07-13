@@ -5,8 +5,6 @@
   "scripts": {
     "generate": "node scripts/generate-metadata.mjs",
     "r2:upload": "node scripts/upload-to-r2.mjs",
-    "predev": "node scripts/sync-media.mjs",
-    "prebuild": "node scripts/sync-media.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

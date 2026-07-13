@@ -54,22 +54,21 @@ function getContentType(ext) {
   }
 }
 
-async function uploadVisuals() {
-  const srcDir = path.join(process.cwd(), 'content', 'works', 'visuals');
+async function uploadDirectory(srcDir, prefix) {
   if (!fs.existsSync(srcDir)) {
-    console.error('Source directory not found.');
+    console.warn(`Directory not found: ${srcDir}`);
     return;
   }
 
   const files = fs.readdirSync(srcDir);
-  console.log(`Found ${files.length} files. Starting upload...`);
+  console.log(`Found ${files.length} files in ${prefix}. Starting upload...`);
 
   for (const file of files) {
     const ext = path.extname(file).toLowerCase();
     if (!MEDIA_EXTS.includes(ext)) continue;
 
     const safeFilename = sanitizeMediaFilename(file);
-    const key = `works/visuals/${safeFilename}`;
+    const key = `${prefix}/${safeFilename}`;
     const filePath = path.join(srcDir, file);
     const body = fs.readFileSync(filePath);
 
@@ -87,4 +86,12 @@ async function uploadVisuals() {
   }
 }
 
-uploadVisuals();
+async function uploadAll() {
+  const visualsDir = path.join(process.cwd(), 'content', 'works', 'visuals');
+  const journalDir = path.join(process.cwd(), 'content', 'journal');
+
+  await uploadDirectory(visualsDir, 'works/visuals');
+  await uploadDirectory(journalDir, 'journal');
+}
+
+uploadAll();
